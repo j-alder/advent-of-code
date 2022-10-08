@@ -1,6 +1,8 @@
 import Data.Map (Map, insertWith, empty, keys)
 
-move :: (Int, Int) -> Char -> (Int, Int)
+type Position = (Int, Int)
+
+move :: Position -> Char -> Position
 move currPos direction = case direction of 
     '^' -> (fst currPos, snd currPos + 1)
     'v' -> (fst currPos, snd currPos - 1)
@@ -8,12 +10,12 @@ move currPos direction = case direction of
     '>' -> (fst currPos + 1, snd currPos)
     _ -> currPos
 
-allPos :: (Int, Int) -> String -> [(Int, Int)]
+allPos :: Position -> String -> [Position]
 allPos currPos moves = if null moves 
     then []
     else currPos : allPos (move currPos (head moves)) (tail moves)
 
-groupByPos :: (Int, Int) -> Map (Int, Int) Int -> Map (Int, Int) Int
+groupByPos :: Position -> Map Position Int -> Map Position Int
 groupByPos pos = insertWith (+) pos 1
 
 soln1 :: String -> Int
@@ -21,9 +23,23 @@ soln1 input = length (keys cMap)
     where
         cMap = foldr groupByPos empty (allPos (0, 0) input)
 
+prep :: String -> [(Char, Char)] -> [(Char, Char)]
+prep str acc = if (null str) then acc
+    else if (length str == 1) then acc ++ [(str !! 0, ' ')]
+    else prep (drop 2 str) (acc ++ [(str !! 0, str !! 1)])
+
+soln2 :: String -> Int
+soln2 input = length (keys srMap)
+    where
+        moves = unzip (prep input [])
+        sMap = foldr groupByPos empty (allPos (0, 0) (fst moves))
+        srMap = foldr groupByPos sMap (allPos (0, 0) (snd moves))
+
 main = do
     input <- readFile "./input.txt"
     print (soln1 input)
+    print (soln2 input)
+
 
 {- 
 --- Day 3: Perfectly Spherical Houses in a Vacuum ---
