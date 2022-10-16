@@ -24,9 +24,10 @@ soln1 input = length (keys cMap)
         cMap = foldr groupByPos empty (allPos (0, 0) input)
 
 prep :: String -> [(Char, Char)] -> [(Char, Char)]
-prep str acc = if (null str) then acc
-    else if (length str == 1) then acc ++ [(str !! 0, ' ')]
-    else prep (drop 2 str) (acc ++ [(str !! 0, str !! 1)])
+prep str acc 
+    | null str = acc
+    | length str == 1 = acc ++ [(head str, ' ')]
+    | otherwise = prep (drop 2 str) (acc ++ [(head str, str !! 1)])
 
 soln2 :: String -> Int
 soln2 input = length (keys srMap)
