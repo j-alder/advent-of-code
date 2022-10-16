@@ -10,24 +10,21 @@ splitStr c str = if null n'' then [n']
         n'' = snd n
 
 fmtCoord :: String -> (Int, Int)
-fmtCoord s = (read (spl !! 0), read (spl !! 1))
+fmtCoord s = (read (head spl), read (spl !! 1))
     where
         spl = splitStr ',' s
 
 fmtInst :: String -> [Instruction] -> [Instruction]
-fmtInst s acc = 
-    if (spl !! 1 == "on") 
-        then ("on", fmtCoord (spl !! 2), fmtCoord (spl !! 4)) : acc
-    else if (spl !! 1 == "off")
-        then ("off", fmtCoord (spl !! 2), fmtCoord (spl !! 4)) : acc
-    else if (spl !! 0 == "toggle")
-        then ("toggle", fmtCoord (spl !! 1), fmtCoord (spl !! 3)) : acc
-    else acc
-    where
-        spl = splitStr ' ' s
+fmtInst s acc
+  | head spl == "on" = ("on", fmtCoord (spl !! 2), fmtCoord (spl !! 4)) : acc
+  | head spl == "off" = ("off", fmtCoord (spl !! 2), fmtCoord (spl !! 4)) : acc
+  | head spl == "toggle" = ("toggle", fmtCoord (spl !! 1), fmtCoord (spl !! 3)) : acc
+  | otherwise = acc
+  where
+      spl = splitStr ' ' s
 
 parseInput :: [String] -> [Instruction]
-parseInput input = foldr fmtInst [] input
+parseInput = foldr fmtInst []
 
 initialGrid :: [[Int]]
 initialGrid = replicate 1000 (replicate 1000 0)
@@ -41,19 +38,19 @@ initialGrid = replicate 1000 (replicate 1000 0)
 type Mutator = Coordinate -> Coordinate -> [[Int]] -> [[Int]] 
 
 onGrid :: Mutator
-onGrid s e g = map () g
+onGrid s e = map ()
 
 offGrid :: Mutator
-offGrid s e g = foldr _ [] g
+offGrid s e = foldr _ []
 
 toggleGrid :: Mutator
-toggleGrid s e g = foldr _ [] g
+toggleGrid s e = foldr _ []
 
 doInst :: Instruction -> [[Int]] -> [[Int]]
-doInst i g = case (i !! 0) of 
-    ("on") -> onGrid (i !! 1) (i !! 2) g
-    ("off") -> offGrid (i !! 1) (i !! 2) g
-    ("toggle") -> toggleGrid (i !! 1) (i !! 2) g
+doInst i g = case head i of 
+    "on" -> onGrid (i !! 1) (i !! 2) g
+    "off" -> offGrid (i !! 1) (i !! 2) g
+    "toggle" -> toggleGrid (i !! 1) (i !! 2) g
     _ -> g
 
 soln :: IO ()

@@ -59,8 +59,13 @@ buildMap s m
     | length s < 2 = m 
     | otherwise = buildMap (tail s) (insertWith (+) (take 2 s) 1 m)
 
+isRepeat :: (String, Int) -> String -> Bool
+isRepeat t s = head str /= last str || snd t == 3
+    where
+        str = fst t
+
 containsRepeat :: String -> Bool
-containsRepeat s = not (any (\x -> snd x > 1) (toList (buildMap s empty)))
+containsRepeat s = any (`isRepeat` s) (filter (\x -> snd x > 1) (toList (buildMap s empty)))
 
 countNice2 :: String -> Int -> Int
 countNice2 s n = 
@@ -79,13 +84,6 @@ filterNice = do
     print (filter (\x -> not (containsPalindrome x || containsRepeat x)) input)
     print (filter (\x -> containsPalindrome x && containsRepeat x) input)
 
-tst :: IO ()
-tst = do
-    print "okay"
-    print (containsRepeat "qjhvhtzxzqqjkmpb" && containsPalindrome "qjhvhtzxzqqjkmpb")
-    print (containsPalindrome "xxyxx" && containsRepeat "xxyxx")
-    print (containsRepeat "uurcxstgmygtbstg" && containsPalindrome "uurcxstgmygtbstg")
-    print (containsRepeat "ieodomkazucvgmuy" && containsPalindrome "ieodomkazucvgmuy")
 {- 
 --- Day 5: Doesn't He Have Intern-Elves For This? ---
 Santa needs help figuring out which strings in his text file are naughty or nice.
