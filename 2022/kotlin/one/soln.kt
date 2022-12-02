@@ -5,7 +5,7 @@ import util.forEachLine
 fun main() {
     var topCals = listOf(0, 0, 0)
     var total = 0
-    forEachLine("/2022/kotlin/one/input.txt") { line ->
+    forEachLine("/2022/input/one.txt") { line ->
         if (line.isNotEmpty()) {
             total += line.toInt()
         } else {

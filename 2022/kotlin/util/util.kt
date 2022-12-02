@@ -9,7 +9,7 @@ import java.lang.Exception
  * Run a function [f] on each line of text in an input file
  * located at [path]
  *
- * Example [path]: /2022/kotlin/one/input.txt
+ * Example [path]: /2022/input/one.txt
  */
 fun forEachLine(path: String, f: (String) -> Unit) = try {
     File(System.getProperty("user.dir") + path)
