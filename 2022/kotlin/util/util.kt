@@ -1,9 +1,7 @@
 package util
 
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
-import java.lang.Exception
+import kotlin.Exception
 
 /**
  * Run a function [f] on each line of text in an input file
@@ -13,11 +11,20 @@ import java.lang.Exception
  */
 fun forEachLine(path: String, f: (String) -> Unit) = try {
     File(System.getProperty("user.dir") + path)
-        .let { file ->
-            BufferedReader(FileReader(file)).use { reader ->
-                reader.lines().forEach { f(it) }
-            }
-        }
+        .forEachLine { f(it) }
 } catch (e: Exception) {
     e.printStackTrace()
+}
+
+/**
+ * List of all lines in an input file located at [path]
+ *
+ * Example [path]: /2022/input/one.txt
+ */
+fun inputToList(path: String): List<String> = try {
+    File(System.getProperty("user.dir") + path)
+        .readLines()
+} catch (e: Exception) {
+    e.printStackTrace()
+    emptyList()
 }
