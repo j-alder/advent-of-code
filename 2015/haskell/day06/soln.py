@@ -10,6 +10,6 @@ def initial_grid():
     return 
 
 def soln():
-    inst = [fmt_inst(x.split(' ')) for x in open("input.txt").readlines()]
+    inst = [fmt_inst(x.split(' ')) for x in open("../../../2022/input/six.txt").readlines()]
 
 soln()
