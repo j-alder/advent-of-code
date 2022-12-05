@@ -1,4 +1,4 @@
-package three
+package day03
 
 import util.forEachLine
 import util.inputToList

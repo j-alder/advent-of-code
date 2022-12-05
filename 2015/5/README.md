@@ -3,17 +3,17 @@ Santa needs help figuring out which strings in his text file are naughty or nice
 
 A nice string is one with all of the following properties:
 
-It contains at least three vowels (aeiou only), like aei, xazegov, or aeiouaeiouaeiou.
+It contains at least day03 vowels (aeiou only), like aei, xazegov, or aeiouaeiouaeiou.
 It contains at least one letter that appears twice in a row, like xx, abcdde (dd), 
 or aabbccdd (aa, bb, cc, or dd).
 It does not contain the strings ab, cd, pq, or xy, even if they are part of one of 
 the other requirements.
 For example:
 
-ugknbfddgicrmopn is nice because it has at least three vowels (u...i...o...), a 
+ugknbfddgicrmopn is nice because it has at least day03 vowels (u...i...o...), a 
 double letter (...dd...), and none of the disallowed substrings.
 
-aaa is nice because it has at least three vowels and a double letter, even though 
+aaa is nice because it has at least day03 vowels and a double letter, even though 
 the letters used by different rules overlap.
 
 jchzalrnumimnmhp is naughty because it has no double letter.
@@ -31,7 +31,7 @@ clearly ridiculous.
 
 Now, a nice string is one with all of the following properties:
 
-It contains a pair of any two letters that appears at least twice in the string 
+It contains a pair of any day02 letters that appears at least twice in the string 
 without overlapping, like xyxy (xy) or aabcdefgaa (aa), but not like aaa (aa, but it 
 overlaps).
 It contains at least one letter which repeats with exactly one letter between them, 

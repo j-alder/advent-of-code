@@ -1,4 +1,4 @@
-package four
+package day04
 
 import util.forEachLine
 

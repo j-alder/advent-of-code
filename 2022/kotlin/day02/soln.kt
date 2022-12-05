@@ -1,4 +1,4 @@
-package two
+package day02
 
 import util.forEachLine
 

@@ -1,5 +1,5 @@
 # Day 3: Perfectly Spherical Houses in a Vacuum
-Santa is delivering presents to an infinite two-dimensional grid of houses.
+Santa is delivering presents to an infinite day02-dimensional grid of houses.
 
 He begins by delivering a present to the house at his starting location, 
 and then an elf at the North Pole calls him via radio and tells him where 
@@ -26,7 +26,7 @@ only 2 houses.
 The next year, to speed up the process, Santa creates a robot version of 
 himself, Robo-Santa, to deliver presents with him.
 
-Santa and Robo-Santa start at the same location (delivering two presents 
+Santa and Robo-Santa start at the same location (delivering day02 presents 
 to the same starting house), then take turns moving based on instructions 
 from the elf, who is eggnoggedly reading from the same script as the 
 previous year.
