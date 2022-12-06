@@ -19,6 +19,25 @@ fun forEachLine(path: String, f: (String) -> Unit) = try {
 }
 
 /**
+ * Run a function [f] on each line of text in an input file
+ * located at [path] until [until] is satisfied.
+ */
+fun forEachLineUntil(
+    path: String,
+    f: (String) -> Unit,
+    until: (String) -> Boolean
+) = try {
+    getFile(path).useLines { lines ->
+        for (li in lines) {
+            if (until(li)) break
+            f(li)
+        }
+    }
+} catch (e: Exception) {
+    e.printStackTrace()
+}
+
+/**
  * List of all lines in an input file located at [path]
  *
  * Example [path]: /2022/input/one.txt
