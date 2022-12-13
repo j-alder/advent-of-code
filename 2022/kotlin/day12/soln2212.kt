@@ -1,64 +1,82 @@
 package day12
 
+import util.Coord
 import util.inputToList
 
-// keep track of visited nodes
-// if node has already been visited, kill the path
-/*
-Sabqponm
-abcryxxl
-accszExk
-acctuvwj
-abdefghi
-paths map / collection?
-[(0, 1), (1, 0)]
+typealias Grid = List<String>
 
-map<int, int> = x to y == optimal lookup
+data class PathNode(
+    val coord: Coord,
+    val parent: PathNode?
+)
 
-
- */
-
-typealias Coord = Pair<Int, Int>
-typealias Path = MutableMap<Int, Int>
-typealias Graph = List<List<Int>>
-
+/** All possible heights in the grid */
 val heights = ('a'..'z').toList()
-fun isReachable(current: Char, next: Char): Boolean = try {
-    heights[heights.indexOf(current) + 1] == next
+
+/** Whether [m] is attainable from the current sea level [n] */
+fun isReachable(n: Char?, m: Char?): Boolean = try {
+    n == 'z' && m == 'E' ||
+    heights.indexOf(n).let { heights[it] == m || heights[it + 1] == m }
 } catch (e: Exception) { false }
 
-fun Path.addStep(coord: Coord): Boolean =
-    if (get(coord.first) == coord.second) false
-    else {
-        put(coord.first, coord.second)
-        true
-    }
+/**
+ * Retrieve the Char at this Grid's x/y coordinate
+ * specified in [c], otherwise null
+ */
+fun Grid.getValueAt(c: Coord) = try {
+    this[c.first][c.second].let { if (it == 'S') 'a' else it }
+} catch (e: Exception) { null }
 
-fun Graph.getStep(pos: Coord): Coord? =
-    try {
-        this[pos.first][pos.second]
-        pos
-    } catch (e: Exception) {
-        null
-    }
+/**
+ * Return [c] if it is within the bounds of the
+ * grid, otherwise null
+ */
+fun Grid.getCoord(c: Coord): Coord? = try {
+    this[c.first][c.second]
+    c
+} catch (e: Exception) { null }
 
-fun Graph.get(pos: Coord) = this[pos.first][pos.second]
-
-fun Graph.getSteps(pos: Coord): List<Coord> =
+/** Find all adjacent coordinates to [c] that can be moved to */
+fun Grid.adjacentTo(c: Coord): List<Coord> =
     listOfNotNull(
-        getStep(pos.copy(pos.first, pos.second + 1)),
-        getStep(pos.copy(pos.first, pos.second - 1)),
-        getStep(pos.copy(pos.first - 1, pos.second)),
-        getStep(pos.copy(pos.first + 1, pos.second))
-    ).mapNotNull { stepPos ->
-        if (isReachable(get(pos)))
+        getCoord(Coord(c.first, c.second - 1)),
+        getCoord(Coord(c.first, c.second + 1)),
+        getCoord(Coord(c.first - 1, c.second)),
+        getCoord(Coord(c.first + 1, c.second))
+    ).filter {
+        isReachable(getValueAt(c), getValueAt(it))
     }
 
+fun List<Coord>.undiscovered(p: Set<Coord>) = filter { !p.contains(it) }
 
 fun main() {
-
-    val heightMap = inputToList("/2022/input/twelve_test.txt")
-    val startingPos = heightMap.indexOfFirst { it.contains('S') }.let {
-        Pair(it, heightMap[it].indexOfFirst { c -> c == 'S' })
+    val grid = inputToList("/2022/input/twelve.txt")
+    val startingCoord = grid.indexOfFirst { str ->
+        str.contains('S')
+    }.let { x ->
+        Coord(x, grid[x].indexOfFirst { it == 'S' })
     }
+    // Part 1 - BFS approach
+    val p = mutableSetOf(startingCoord)
+    val q = ArrayDeque<PathNode>()
+    q.addLast(PathNode(startingCoord, null))
+    var curr: PathNode? = null
+    while (q.isNotEmpty()) {
+        curr = q.removeFirst()
+        println(curr.coord)
+        println(grid.getValueAt(curr.coord))
+        if (grid.getValueAt(curr.coord) == 'E') break
+        println(grid.adjacentTo(curr.coord).undiscovered(p))
+        grid.adjacentTo(curr.coord).undiscovered(p).forEach {
+            p.add(it)
+            q.addLast(PathNode(it, curr))
+        }
+    }
+    println(q.size)
+    var count = 0
+    while (curr?.parent != null) {
+        count++
+        curr = curr.parent
+    }
+    println("Answer 1: $count")
 }
