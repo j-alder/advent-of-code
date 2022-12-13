@@ -63,16 +63,12 @@ fun main() {
     var curr: PathNode? = null
     while (q.isNotEmpty()) {
         curr = q.removeFirst()
-        println(curr.coord)
-        println(grid.getValueAt(curr.coord))
         if (grid.getValueAt(curr.coord) == 'E') break
-        println(grid.adjacentTo(curr.coord).undiscovered(p))
         grid.adjacentTo(curr.coord).undiscovered(p).forEach {
             p.add(it)
             q.addLast(PathNode(it, curr))
         }
     }
-    println(q.size)
     var count = 0
     while (curr?.parent != null) {
         count++
