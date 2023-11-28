@@ -11,13 +11,20 @@ function partOne(numbers) {
 }
 
 function partTwo(numbers) {
+  const set = new Set(numbers);
+  for (const n of set) {
+    for (const m of set) {
+      const diff = 2020 - n - m;
+      if (set.has(diff)) {
+        return diff * n * m;
+      }
+    }
+  }
 }
 
 function soln(rawInput) {
-  const numbers = rawInput.split('\n').map(Number);
-  const ansOne = partOne(numbers);
-  const ansTwo = partTwo(numbers);
-  fmtSoln(ansOne, ansTwo);
+  const numbers = rawInput.split('\n').filter(s => s !== '').map(Number);
+  fmtSoln(partOne(numbers), partTwo(numbers));
 }
 
 module.exports = { soln };
