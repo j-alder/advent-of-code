@@ -20,15 +20,6 @@ function partOne(input) {
   return count;
 }
 
-/*
-  byr (Birth Year) - four digits; at least 1920 and at most 2002.
-  iyr (Issue Year) - four digits; at least 2010 and at most 2020.
-  hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
-  ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
-  pid (Passport ID) - a nine-digit number, including leading zeroes.
-  cid (Country ID) - ignored, missing or not.
-*/
-
 function correctNumber(numStr, lowerBound, upperBound) {
   try {
     return Number(numStr) >= lowerBound && Number(numStr) <= upperBound;
