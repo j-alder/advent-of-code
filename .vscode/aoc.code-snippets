@@ -39,5 +39,24 @@
 			"",
 			"*/"
 		],
+	},
+	"Rust boilerplate": {
+		"scope": "rust",
+		"prefix": "rsbp",
+		"body": [
+			"use std::fs;",
+			"use crate::util::format_soln_string;",
+			"",
+			"pub fn soln() -> String {",
+    		"    let input = fs::read_to_string(\"src/y2022/input/'$1'.txt\")",
+        	"        .unwrap();",
+			"",
+    		"    return format_soln_string(",
+			"        \"Incomplete\".to_string(),",
+			"        \"Incomplete\".to_string()",
+			"    );",
+			"}"
+		],
+		"description": "Boilerplate for day solution"
 	}
 }

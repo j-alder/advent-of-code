@@ -4,7 +4,7 @@ const requiredFields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'];
 
 const fieldRegex = /(byr)|(iyr)|(eyr)|(hgt)|(hcl)|(ecl)|(pid)/g;
 
-const fieldAndValueRegex = /(byr:\d{4})|(iyr:\d{4})|(eyr:\d{4})|(hgt:\d{0,3}(in|cm))|(hcl:#[0-9a-f]{6})|(ecl:(amb|blu|brn|gry|grn|hzl|oth))|(pid:[0-9]{9})/g;
+const fieldAndValueRegex = /((byr|iyr|eyr):\d{4}[\s\n])|(hgt:(\d{2}in|\d{3}cm))|(hcl:#[0-9a-f]{6}[\s\n])|(ecl:(amb|blu|brn|gry|grn|hzl|oth))|(pid:\d{9}[\s\n])/gm;
 
 const hasAllRequiredFields = (set) => 
   requiredFields.every(field => set.has(field));
@@ -34,7 +34,7 @@ function partTwo(input) {
     const matches = passport
       .match(fieldAndValueRegex)
       .reduce((result, match) => {
-        const [pre, suf] = match.split(':');
+        const [pre, suf] = match.trim(' ').trim('\n').split(':');
         switch (pre) {
           case 'byr':
             if (correctNumber(suf, 1920, 2002)) result.push(pre);
@@ -46,7 +46,7 @@ function partTwo(input) {
             if (correctNumber(suf, 2020, 2030)) result.push(pre);
             break;
           case 'hgt':
-            if (suf.substring(suf.length - 2) == 'in') {
+            if (suf.substring(suf.length - 2) === 'in') {
               if (correctNumber(suf.substring(0, suf.length-2), 59, 76)) result.push(pre);
             } else {
               if (correctNumber(suf.substring(0, suf.length-2), 150, 193)) result.push(pre);
@@ -56,7 +56,6 @@ function partTwo(input) {
           case 'hcl':
           case 'pid':
           case 'cid':
-            console.log(pre, suf);
             result.push(pre);
             break;
           default:
