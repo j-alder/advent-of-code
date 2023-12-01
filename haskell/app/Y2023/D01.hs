@@ -4,6 +4,7 @@ import Text.Regex.TDFA ((=~), getAllTextMatches)
 
 strToChar :: String -> Char
 strToChar str 
+  | length str == 1 = head str
   | str == "one" = '1'
   | str == "two" = '2'
   | str == "three" = '3'
@@ -12,7 +13,7 @@ strToChar str
   | str == "six" = '6'
   | str == "seven" = '7'
   | str == "eight" = '8'
-  | otherwise = head str
+  | otherwise = '9'
 
 valueTotal1 :: String -> Int -> Int
 valueTotal1 value total = do
