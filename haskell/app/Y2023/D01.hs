@@ -13,7 +13,7 @@ strToChar str
   | str == "six" = '6'
   | str == "seven" = '7'
   | str == "eight" = '8'
-  | otherwise = '9'
+  | str == "nine" = '9'
 
 valueTotal1 :: String -> Int -> Int
 valueTotal1 value total = do

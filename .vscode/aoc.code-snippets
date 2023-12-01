@@ -56,7 +56,23 @@
 			"        \"Incomplete\".to_string()",
 			"    );",
 			"}"
-		],
-		"description": "Boilerplate for day solution"
+		]
+	},
+	"Haskell boilerplate": {
+		"scope": "haskell",
+		"prefix": "hsbp",
+		"body": [
+			"module $1.$2 where",
+			"import Util (splitStr)",
+			"",
+			"soln :: String -> (String, String)",
+			"soln input = do",
+			"  let input' = splitStr '\\n' input",
+			"  (\"incomplete\", \"incomplete\")",
+			"",
+			"{-",
+			"$0",
+			"-}"
+		]
 	}
 }
