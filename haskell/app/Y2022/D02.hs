@@ -1,10 +1,5 @@
-splitStr :: Char -> String -> [String]
-splitStr c str = if null n'' then [n']
-    else n' : splitStr c (tail n'')
-    where
-        n = span (/= c) str
-        n' = fst n
-        n'' = snd n
+module Y2022.D02 where
+import Util
 
 playPt :: String -> Int
 playPt str = case str !! 2 of 
@@ -47,8 +42,3 @@ soln2 :: [String] -> Int -> Int
 soln2 input total
     | null input = total
     | otherwise = soln2 (tail input) (outcome2 (head input) + total)
-
-main = do
-  input <- readFile "../../input/two.txt"
-  print (soln1 (splitStr '\n' input) 0)
-  print (soln2 (splitStr '\n' input) 0)
