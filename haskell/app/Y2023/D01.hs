@@ -1,5 +1,5 @@
 module Y2023.D01 where
-import Util (fmtSolnStr, splitStr)
+import Util (splitStr)
 import Text.Regex.TDFA ((=~), getAllTextMatches)
 
 strToChar :: String -> Char
