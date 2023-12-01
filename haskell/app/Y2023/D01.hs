@@ -29,9 +29,6 @@ valueTotal2 value total = do
     then total
     else total + read [strToChar (head matches), strToChar (last matches)] :: Int
 
-part2 :: [String] -> String
-part2 input = "incomplete"
-
 soln :: String -> (String, String)
 soln input = do
   let input' = splitStr '\n' input
