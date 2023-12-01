@@ -1,4 +1,4 @@
-module Util (readInput, splitStr, allToInt) where
+module Util where
 
 readInput :: String -> String -> IO String
 readInput year day = 
@@ -19,3 +19,6 @@ allToInt strArr
   | null strArr = []
   | head strArr == "" = 0 : allToInt (tail strArr)
   | otherwise = (read (head strArr) :: Int) : allToInt (tail strArr)
+
+fmtSolnStr :: (String, String) -> String
+fmtSolnStr ans = "Part 1: " ++ fst ans ++ "\nPart 2: " ++ snd ans ++ "\n"
