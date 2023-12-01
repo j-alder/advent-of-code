@@ -1,8 +1,32 @@
 module Y2023.D01 where
 import Util (fmtSolnStr, splitStr)
+import Text.Regex.TDFA ((=~), getAllTextMatches)
 
-part1 :: [String] -> String
-part1 input = "incomplete"
+strToChar :: String -> Char
+strToChar str 
+  | str == "one" = '1'
+  | str == "two" = '2'
+  | str == "three" = '3'
+  | str == "four" = '4'
+  | str == "five" = '5'
+  | str == "six" = '6'
+  | str == "seven" = '7'
+  | str == "eight" = '8'
+  | otherwise = head str
+
+valueTotal1 :: String -> Int -> Int
+valueTotal1 value total = do
+  let matches = value =~ "([0-9]{1})" :: [Char]
+  if null matches
+    then total
+    else total + read [head matches, last matches] :: Int
+
+valueTotal2 :: String -> Int -> Int
+valueTotal2 value total = do
+  let matches = getAllTextMatches (value =~ "(one|two|three|four|five|six|seven|eight|nine|[0-9]{1})")
+  if null matches
+    then total
+    else total + read [strToChar (head matches), strToChar (last matches)] :: Int
 
 part2 :: [String] -> String
 part2 input = "incomplete"
@@ -10,7 +34,7 @@ part2 input = "incomplete"
 soln :: String -> (String, String)
 soln input = do
   let input' = splitStr '\n' input
-  (part1 input', part2 input')
+  (show (foldr valueTotal1 0 input'), show (foldr valueTotal2 0 input'))
 
 {-
 --- Day 1: Trebuchet?! ---
