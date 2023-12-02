@@ -1,44 +1,49 @@
 const { fmtSoln } = require('../util.js');
 
-const partOne = (input) =>
-  input.reduce((total, game) => {
-    let [gid, results] = game.split(':');
-    if (gid) {
-      gid = parseInt(gid?.split(' ')[1]);
-      if (!results.split(';').every(res => {
-        const matches = res.match(/(\d* red|\d* green|\d* blue)/g);
-        return (
-          matches.filter(m => m.split(' ')[1] === 'red').reduce((r, z) => r + parseInt(z.split(' ')[0]), 0) <= 12 &&
-          matches.filter(m => m.split(' ')[1] === 'green').reduce((r, z) => r + parseInt(z.split(' ')[0]), 0) <= 13 &&
-          matches.filter(m => m.split(' ')[1] === 'blue').reduce((r, z) => r + parseInt(z.split(' ')[0]), 0) <= 14
-        );
-      })) gid = 0;
-    }
-    return total + gid ?? 0;
-  }, 0);
+const regex = /(\d* red|\d* green|\d* blue)/g;
 
-const partTwo = (input) =>
-  input.reduce((total, game) => {
-    const results = game.split(':')?.[1];
-    let power = 0;
-    if (results) {
-      let r = 0, g = 0, b = 0;
-      results.match(/(\d* red|\d* green|\d* blue)/g).forEach(it => {
-        const [count, color] = it.split(' ');
-        if (color === 'red') r = Math.max(r, parseInt(count));
-        if (color === 'green') g = Math.max(g, parseInt(count));
-        if (color === 'blue') b = Math.max(b, parseInt(count));
-      });
-      if (r > 0 || b > 0 || g > 0) {
-        power = (r > 0 ? r : 1) * (g > 0 ? g : 1) * (b > 0 ? b : 1);
-      }
+const fmtGame = (input) => 
+  input.reduce((result, game) => {
+    const [gameIdStr, gameResultStr] = game.split(':');
+    if (gameIdStr) {
+      const gameId = gameIdStr.split(' ')[1];
+      const gameResults = gameResultStr.split(';').map(res =>
+        res.match(regex).reduce((gameResults, match) => {
+          const [count, color] = match.split(' ');
+          gameResults = { ...gameResults, [color]: parseInt(count) }
+          return gameResults;
+        }, {})
+      );
+      result[gameId] = gameResults;
     }
-    return total + power;
-  }, 0);
+    return result;
+  }, {});
+
+const partOne = (games) => 
+  Object.entries(games)
+    .reduce((total, [id, results]) => {
+      if (results.some(r => r.red > 12 || r.green > 13 || r.blue > 14)) {
+        return total;
+      }
+      return total + parseInt(id);
+    }, 0);
+
+const partTwo = (games) =>
+  Object.entries(games)
+    .reduce((total, [id, results]) => {
+      let r, g, b;
+      results.forEach(res => {
+        r = res.red ? Math.max(res.red, r ?? 1) : r;
+        g = res.green ? Math.max(res.green, g ?? 1) : g;
+        b = res.blue ? Math.max(res.blue, b ?? 1) : b;
+      });
+      return total + r * g * b;
+    }, 0);
 
 function soln(rawInput) {
   const input = rawInput.split('\n');
-  fmtSoln(partOne(input), partTwo(input));
+  const games = fmtGame(input);
+  fmtSoln(partOne(games), partTwo(games));
 }
 
 module.exports = { soln };
