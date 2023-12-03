@@ -1,4 +1,14 @@
-# Advent of Code - Rust Solutions
-Each year of Advent of Code solved using Rust.
+# Rust Solutions
 
-By no means exhaustive.
+## Building
+
+```bash
+$ cargo build
+```
+
+## Running
+
+```bash
+$ cargo run <year> <day>
+```
+
