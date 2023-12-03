@@ -2,6 +2,6 @@
 
 ## Running
 From this directory, run the following with a target `year` and `day`:
-```shell
+```bash
 $ node index.js <year> <day>
 ```
