@@ -8,19 +8,9 @@ const getPoints = (winningNumbers, cardNumbers) =>
     return points;
   }, 0);
 
-const partOne = (input) =>
-  input.reduce((total, card) => {
-    if (card.length > 0) {
-      const numbers = card
-        .split(':')[1]
-        .split('|')
-        .map(it => it
-          .split(' ')
-          .filter(s => s !== '')
-          .map(n => Number(n)));
-      return total + getPoints(new Set(numbers[0]), numbers[1]);
-    }
-    return total;
+const partOne = (cards) =>
+  cards.reduce((total, card) => {
+    return total + getPoints(new Set(card[0]), card[1]);
   }, 0);
 
 const totalWinning = (winningNumbers, cardNumbers) => 
@@ -31,46 +21,37 @@ const totalWinning = (winningNumbers, cardNumbers) =>
     return total;
   }, 0);
 
-// [1] 
-// [1]
-// [1]
-// [1]
-// [1]
-// [1]
-
-function partTwo(cards) {
-  cards.forEach((card, ci) => {
+const partTwo = (cards) =>
+  cards.reduce((total, card, ci) => {
     for (let i = 0; i < card[2]; i++) {
-      let x = totalWinning(new Set(card[0]), card[1]);
-      console.log(`card ${ci + 1} won ${x} cards`)
-      while (x > 0) {
-        if (x + ci < cards.length) {
-          console.log(`adding 1 card ${ci + i + 1}`)
-          cards[ci + i][2] += 1;
+      const winningNumbers = new Set(card[0]);
+      const cardNumbers = card[1];
+      let totalScratchers = totalWinning(winningNumbers, cardNumbers);
+      while (totalScratchers > 0) {
+        if (totalScratchers + ci < cards.length) {
+          cards[totalScratchers + ci][2] += 1
         }
-        x--;
+        totalScratchers--;
       }
     }
-  });
-  return cards.reduce((total, card) => total + card[2], 0);
-}
+    return total + card[2];
+  }, 0);
+
+const fmtInput = rawInput => rawInput
+  .split('\n')
+  .filter(s => s !== '')
+  .map(ln => ln
+    .split(':')[1]
+    .split('|')
+    .map(it => it
+      .split(' ')
+      .filter(s => s !== '')
+      .map(n => Number(n))))
+  .map(it => ([...it, 1]));
 
 function soln(rawInput) {
-  const input = rawInput.split('\n');
-
-  const test = 'Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53\nCard 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19\nCard 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1\nCard 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83\nCard 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36\nCard 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11\n';
-  const testInput = test
-    .split('\n')
-    .filter(s => s !== '')
-    .map(ln => ln
-      .split(':')[1]
-      .split('|')
-      .map(it => it
-        .split(' ')
-        .filter(s => s !== '')
-        .map(n => Number(n))))
-    .map(it => ([...it, 1]));
-  fmtSoln(partOne(input), partTwo(testInput));
+  const cards = fmtInput(rawInput);
+  fmtSoln(partOne(cards), partTwo(cards));
 }
 
 module.exports = { soln };
