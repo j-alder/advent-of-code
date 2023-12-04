@@ -23,16 +23,14 @@ const totalWinning = (winningNumbers, cardNumbers) =>
 
 const partTwo = (cards) =>
   cards.reduce((total, card, ci) => {
-    for (let i = 0; i < card[2]; i++) {
-      const winningNumbers = new Set(card[0]);
-      const cardNumbers = card[1];
-      let totalScratchers = totalWinning(winningNumbers, cardNumbers);
-      while (totalScratchers > 0) {
-        if (totalScratchers + ci < cards.length) {
-          cards[totalScratchers + ci][2] += 1
-        }
-        totalScratchers--;
+    const winningNumbers = new Set(card[0]);
+    const cardNumbers = card[1];
+    let totalScratchers = totalWinning(winningNumbers, cardNumbers);
+    while (totalScratchers > 0) {
+      if (totalScratchers + ci < cards.length) {
+        cards[totalScratchers + ci][2] += 1 * card[2]
       }
+      totalScratchers--;
     }
     return total + card[2];
   }, 0);
@@ -44,8 +42,7 @@ const fmtInput = rawInput => rawInput
     .split(':')[1]
     .split('|')
     .map(it => it
-      .split(' ')
-      .filter(s => s !== '')
+      .match(/\d+/g)
       .map(n => Number(n))))
   .map(it => ([...it, 1]));
 
