@@ -1,4 +1,4 @@
-const { fmtSoln } = require('../util.js');
+const { fmtSoln, fmtSolnWithRuntime } = require('../util.js');
 
 const getPoints = (winningNumbers, cardNumbers) => 
   cardNumbers.reduce((points, cardNumber) => {
@@ -48,7 +48,7 @@ const fmtInput = rawInput => rawInput
 
 function soln(rawInput) {
   const cards = fmtInput(rawInput);
-  fmtSoln(partOne(cards), partTwo(cards));
+  fmtSolnWithRuntime(() => partOne(cards), () => partTwo(cards));
 }
 
 module.exports = { soln };

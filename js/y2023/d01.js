@@ -1,4 +1,4 @@
-const { fmtSoln } = require('../util.js');
+const { fmtSoln, fmtSolnWithRuntime } = require('../util.js');
 
 const partOne = (input) =>
   input.reduce((total, calibration) => {
@@ -36,7 +36,7 @@ const partTwo = (input) =>
 
 function soln(rawInput) {
   const input = rawInput.split('\n');
-  fmtSoln(partOne(input), partTwo(input));
+  fmtSolnWithRuntime(() => partOne(input), () => partTwo(input));
 }
 
 module.exports = { soln };
