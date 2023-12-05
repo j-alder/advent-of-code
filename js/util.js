@@ -10,9 +10,10 @@ function fmtSolnWithRuntime(cb1, cb2) {
   console.log(`runtime: ${performance.now() - start} ms`);
 }
 
-function readInput(year, day) {
+function readInput(year, day, test) {
+  console.log(test);
   const fs = require('node:fs');
-  const file = fs.readFileSync(`../input/y${year}/d${day < 10 ? `0${day}` : day}.txt`, 'utf8');
+  const file = fs.readFileSync(`../input/y${year}/d${day < 10 ? `0${day}` : day}${test ? '_test' : ''}.txt`, 'utf8');
   return file;
 }
 
