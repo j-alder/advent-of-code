@@ -11,7 +11,6 @@ function fmtSolnWithRuntime(cb1, cb2) {
 }
 
 function readInput(year, day, test) {
-  console.log(test);
   const fs = require('node:fs');
   const file = fs.readFileSync(`../input/y${year}/d${day < 10 ? `0${day}` : day}${test ? '_test' : ''}.txt`, 'utf8');
   return file;
