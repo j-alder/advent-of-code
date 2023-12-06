@@ -1,4 +1,4 @@
-const { fmtSoln, fmtSolnWithRuntime } = require('../util.js');
+const { fmtSoln, fmtAnsWithRuntime } = require('../util.js');
 
 const regex = /(\d* red|\d* green|\d* blue)/g;
 
@@ -43,7 +43,7 @@ const partTwo = (games) =>
 function soln(rawInput) {
   const input = rawInput.split('\n');
   const games = fmtGame(input);
-  fmtSolnWithRuntime(() => partOne(games), () => partTwo(games));
+  fmtAnsWithRuntime(() => partOne(games), () => partTwo(games));
 }
 
 module.exports = { soln };

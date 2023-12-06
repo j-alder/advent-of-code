@@ -2,12 +2,17 @@ function fmtSoln(ansOne, ansTwo) {
   console.log(`part one: ${ansOne ?? 'incomplete'}\npart two: ${ansTwo ?? 'incomplete'}`);
 }
 
-function fmtSolnWithRuntime(cb1, cb2) {
+function withRuntime(cb) {
   const start = performance.now();
-  const ansOne = cb1();
-  const ansTwo = cb2();
-  fmtSoln(ansOne, ansTwo);
-  console.log(`runtime: ${performance.now() - start} ms`);
+  return [cb(), performance.now() - start];
+}
+
+function fmtAnsWithRuntime(cb1, cb2) {
+  const start = performance.now();
+  const [ansOne, rtOne] = withRuntime(cb1)
+  const [ansTwo, rtTwo] = withRuntime(cb2);
+  console.log(`part one: ${ansOne ?? 'incomplete'}\n  runtime (ms): ${rtOne}\n`);
+  console.log(`part two: ${ansTwo ?? 'incomplete'}\n  runtime (ms): ${rtTwo}`);
 }
 
 function readInput(year, day, test) {
@@ -18,7 +23,7 @@ function readInput(year, day, test) {
 
 module.exports = {
   fmtSoln,
-  fmtSolnWithRuntime,
+  fmtAnsWithRuntime,
   readInput,
 };
 

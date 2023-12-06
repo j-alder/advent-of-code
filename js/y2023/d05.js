@@ -1,4 +1,4 @@
-const { fmtSolnWithRuntime } = require('../util.js');
+const { fmtAnsWithRuntime } = require('../util.js');
 
 function getLocation(seed, maps) {
   let ref = seed;
@@ -56,7 +56,7 @@ const fmtInput = (input) => ([
 function soln(rawInput) {
   const input = rawInput.split('\n\n');
   const seedsAndMaps = fmtInput(input);
-  fmtSolnWithRuntime(() => partOne(seedsAndMaps), () => partTwo(seedsAndMaps));
+  fmtAnsWithRuntime(() => partOne(seedsAndMaps), () => partTwo(seedsAndMaps));
 }
 /* 
 79 14 55 13

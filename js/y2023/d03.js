@@ -1,4 +1,4 @@
-const { fmtSoln, fmtSolnWithRuntime } = require('../util.js');
+const { fmtSoln, fmtAnsWithRuntime } = require('../util.js');
 
 const getSurrounding = (matrix, [a, b]) => 
   [
@@ -81,7 +81,7 @@ function partTwo(input) {
 function soln(rawInput) {
   const input1 = rawInput.split('\n').map(it => it.split(''));
   const input2 = rawInput.split('\n').map(it => it.split(''));
-  fmtSolnWithRuntime(() => partOne(input1), () => partTwo(input2));
+  fmtAnsWithRuntime(() => partOne(input1), () => partTwo(input2));
 }
 
 module.exports = { soln };

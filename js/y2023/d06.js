@@ -1,4 +1,4 @@
-const { fmtSoln, fmtSolnWithRuntime } = require('../util.js');
+const { fmtSoln, fmtAnsWithRuntime } = require('../util.js');
 
 function countWays(raceLength, minDistance) {
   let count = 0;
@@ -36,7 +36,7 @@ const fmtInput = (rawInput) => ([
 
 function soln(rawInput) {
   const [input1, input2] = fmtInput(rawInput);
-  fmtSolnWithRuntime(() => partOne(input1), () => partTwo(input2));
+  fmtAnsWithRuntime(() => partOne(input1), () => partTwo(input2));
 }
 
 module.exports = { soln };
