@@ -1,6 +1,64 @@
 const { fmtSoln } = require('../util.js');
 
+const cardToScore = {
+  'A': '14',
+  'Q': '13',
+  'K': '12',
+  'J': '11',
+  'T': '10',
+  '9': '9',
+  '8': '8',
+  '7': '7',
+  '6': '6',
+  '5': '5',
+  '4': '4',
+  '3': '3',
+  '2': '2',
+};
+
+function fmtHand(handStr) {
+  const hand = {};
+  handStr.split('').forEach(card => {
+    const weight = cardToScore[card];
+    if (hand[weight]) {
+      hand[weight] += 1;
+    } else {
+      hand[weight] = 1;
+    }
+  });
+  return hand;
+}
+
+const fmtPartOne = (input) =>
+  input.map(ln => {
+    const [hand, wager] = ln.split(' ');
+    return [fmtHand(hand), Number(wager)]
+  });
+
+function groupTypes(hands) {
+  const rank = {
+    '5k': [],
+    '4k': [],
+    'fh': [],
+    '3k': [],
+    '2p': [],
+    '1p': [],
+    'hc': [],
+  };
+  hands.forEach(hand => {
+    if (Object.values(hand[0]).every(v => v === 5)) rank['5k'].push(hand);
+    else if (Object.values(hand[0]).some(v => v === 4)) rank['4k'].push(hand);
+    else if (Object.values(hand[0]).some(v => v === 3) && Object.values(hand[0]).filter(v => v === 2).length === 1) rank['fh'].push(hand);
+    else if (Object.values(hand[0]).some(v => v === 3)) rank['3k'].push(hand);
+    else if (Object.values(hand[0]).filter(v => v === 2).length === 2) rank['2p'].push(hand);
+    else if (Object.values(hand[0]).filter(v => v === 2).length === 1) rank['1p'].push(hand);
+    else rank['hc'].push(hand);
+  });
+  return rank;
+}
+
 function partOne(input) {
+  console.log(groupTypes(fmtPartOne(input)));
 }
 
 function partTwo(input) {
