@@ -1,43 +1,4 @@
-const { fmtSoln } = require('../util.js');
-
-const score = {
-  'A': 14,
-  'Q': 13,
-  'K': 12,
-  'J': 11,
-  'T': 10,
-  '9': 9,
-  '8': 8,
-  '7': 7,
-  '6': 6,
-  '5': 5,
-  '4': 4,
-  '3': 3,
-  '2': 2,
-};
-
-function compare(left, right) {
-  for (let i = 0; i < left.length; i++) {
-    if (score[left[i]] > score[right[i]]) return true;
-    else if (score[left[i]] < score[right[i]]) return false;
-  }
-}
-
-function sortType(typeArr) {
-  if (typeArr.length <= 1) return typeArr;
-  const mid = Math.floor(typeArr.length / 2);
-  const left = sortType(typeArr.slice(0, mid));
-  const right = sortType(typeArr.slice(mid));
-  const res = [];
-  let i = 0, j = 0;
-  while (i < left.length && j < right.length) {
-    if (compare(left[i][0], right[j][0])) res.push(left[i++]);
-    else res.push(right[j++]);
-  }
-  while (i < left.length) res.push(left[i++]);
-  while (j < right.length) res.push(right[j++]);
-  return res;
-}
+const { fmtSoln, fmtAnsWithRuntime } = require('../util.js');
 
 function fmtHand(handStr) {
   const hand = {};
@@ -48,20 +9,34 @@ function fmtHand(handStr) {
   return hand;
 }
 
-function groupTypes(input) {
-  const rank = { '5k': [], '4k': [], 'fh': [], '3k': [], '2p': [], '1p': [], 'hc': [] };
-  for (let el of input) {
-    const handCounts = fmtHand(el[0]);
-    if (Object.values(handCounts).every(v => v === 5)) rank['5k'].push(el);
-    else if (Object.values(handCounts).some(v => v === 4)) rank['4k'].push(el);
-    else if (Object.values(handCounts).filter(v => v === 3).length === 1 && Object.values(handCounts).filter(v => v === 2).length === 1) rank['fh'].push(el);
-    else if (Object.values(handCounts).some(v => v === 3)) rank['3k'].push(el);
-    else if (Object.values(handCounts).filter(v => v === 2).length === 2) rank['2p'].push(el);
-    else if (Object.values(handCounts).filter(v => v === 2).length === 1) rank['1p'].push(el);
-    else rank['hc'].push(el);
-  }
+const cards = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
 
-  return rank;
+const score = (card) => cards.indexOf(card) + 1;
+
+function scoreHandType(hand) {
+  const counts = Object.values(fmtHand(hand));
+  if (counts.includes(5)) return 70_000_000_000;
+  else if (counts.includes(4)) return 60_000_000_000;
+  else if (counts.includes(3) && counts.includes(2)) return 50_000_000_000;
+  else if (counts.includes(3)) return 40_000_000_000;
+  else if (counts.filter(v => v === 2).length === 2) return 30_000_000_000;
+  else if (counts.includes(2)) return 20_000_000_000;
+  else return 10_000_000_000;
+}
+
+const scoreHighCards = (hand) =>
+  hand.split('').reduce((total, card, idx) => 
+    total + score(card) * 100 ** (hand.length - idx), 0);
+
+const scoreHand = (hand) => 
+  scoreHandType(hand) + scoreHighCards(hand);
+
+const partOne = (input) =>
+  input
+    .sort(([handA], [handB]) => scoreHand(handA) - scoreHand(handB))
+    .reduce((acc, [_, bid], idx) => acc + (bid * (input.length - idx)), 0);
+
+function partTwo(input) {
 }
 
 const fmtInput = (input) =>
@@ -70,132 +45,10 @@ const fmtInput = (input) =>
     return [lns[0], Number(lns[1])];
   });
 
-function partOne(input) {
-  const totalHands = input.length;
-  let totalScore = 0;
-  const typeGroups = groupTypes(input);
-  const sorted = Object.values(typeGroups).flatMap(typeGroup => sortType(typeGroup));
-  let i = input.length;
-  while (sorted.length) {
-    const hand = sorted.shift();
-    totalScore += hand[1] * i;
-    i--;
-  }
-  return totalScore;
-}
-
-function partTwo(input) {
-}
-
 function soln(rawInput) {
   const input = fmtInput(rawInput);
-  fmtSoln(main({ lines: rawInput.split('\n') }), partTwo(input));
+  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
 }
-
-
-const CARDS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
-
-const toCardValue = card => CARDS.indexOf(card) + 1;
-
-// The high-card value for a hand is the value of each card summed together,
-// but with the preceding card scores multiplied by orders of magnitude.
-// Examples:
-//   - 23456 ->   102,030,405
-//   - AKQJT -> 1,312,111,009
-const scoreHighCards = (hand) => {
-  const placeValues = hand
-    .slice()
-    .reverse()
-    .map((card, index) => toCardValue(card) * 100 ** index);
-
-  return sum(placeValues);
-}
-
-// Hand types are always more valuable than high cards, so the get values the
-// next order of magnitude above the best high card value.
-const scoreHandType = (hand) => {
-  const cardCounts = countGroups(hand);
-  const counts = Object.values(cardCounts);
-  const highCount = greatest(counts);
-
-  if (highCount === 5) {
-    return 70_000_000_000;
-  }
-  if (highCount === 4) {
-    return 60_000_000_000;
-  }
-  if (counts.includes(3) && counts.includes(2)) {
-    return 50_000_000_000;
-  }
-  if (highCount === 3) {
-    return 40_000_000_000;
-  }
-  if (count(counts, 2) === 2) {
-    return 30_000_000_000;
-  }
-  if (highCount === 2) {
-    return 20_000_000_000;
-  }
-  return 10_000_000_000;
-};
-
-// Every hand ends up with a unique numerical value down to the last high card
-const scoreHand = hand => scoreHandType(hand) + scoreHighCards(hand);
-
-
-function main({ lines }) {
-  const hands = lines
-    .map(line => line.split(' '))
-    .map(([hand, bid]) => [hand.split(''), Number(bid)]);
-
-  const winnings = hands
-    .slice()
-    .sort(([handA], [handB]) => scoreHand(handA) - scoreHand(handB))
-    .map(([_, bid], index) => bid * (index + 1));
-
-  return sum(winnings);
-}
-
-const countGroups = (strOrArray, groupFn = x => x) => {
-  const counts = {};
-
-  for (let i = 0; i < strOrArray.length; i += 1) {
-    const group = groupFn(strOrArray[i], i, strOrArray);
-
-    if (hasProp(counts, group)) {
-      counts[group] += 1;
-    } else {
-      counts[group] = 1;
-    }
-  }
-
-  return counts;
-};
-
-const greatest = (items, xform = (x) => x) => (
-  firstOfSort(items, (a, b) => xform(b) - xform(a))
-);
-
-const count = (items, match = Boolean) => {
-  const matchFn = typeof match === 'function'
-    ? match
-    : (item => item === match);
-
-
-  return items.filter(matchFn).length;
-};
-
-const sum = nums => nums.reduce((total, num) => total + num, 0);
-
-const hasProp = (val, prop) => {
-  if (val == null) {
-    return false;
-  }
-
-  return hasOwnProperty.call(val, prop);
-};
-
-const firstOfSort = (items, sortFn) => items.slice().sort(sortFn)[0];
 
 module.exports = { soln };
 
