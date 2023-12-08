@@ -1,4 +1,4 @@
-const { fmtSoln, fmtAnsWithRuntime } = require('../util.js');
+const { fmtAnsWithRuntime } = require('../util.js');
 
 const regex = /(\d* red|\d* green|\d* blue)/g;
 

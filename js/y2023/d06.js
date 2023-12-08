@@ -1,4 +1,4 @@
-const { fmtSoln, fmtAnsWithRuntime } = require('../util.js');
+const { fmtAnsWithRuntime } = require('../util.js');
 
 function countWays(raceLength, minDistance) {
   let count = 0;

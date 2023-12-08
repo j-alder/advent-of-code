@@ -1,4 +1,4 @@
-const { fmtSoln } = require('../util.js');
+const { fmtAnsWithRuntime } = require('../util.js');
 
 const requiredFields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'];
 
@@ -70,7 +70,7 @@ function partTwo(input) {
 
 function soln(rawInput) {
   const input = rawInput.split('\n\n');
-  fmtSoln(partOne(input), partTwo(input));
+  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
 }
 
 module.exports = { soln };

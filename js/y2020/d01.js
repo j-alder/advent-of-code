@@ -1,4 +1,4 @@
-const { fmtSoln } = require('../util.js');
+const { fmtAnsWithRuntime } = require('../util.js');
 
 function partOne(numbers) {
   const set = new Set(numbers);
@@ -24,7 +24,7 @@ function partTwo(numbers) {
 
 function soln(rawInput) {
   const numbers = rawInput.split('\n').filter(s => s !== '').map(Number);
-  fmtSoln(partOne(numbers), partTwo(numbers));
+  fmtAnsWithRuntime(() => partOne(numbers), () => partTwo(numbers));
 }
 
 module.exports = { soln };

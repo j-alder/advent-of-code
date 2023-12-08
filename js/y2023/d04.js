@@ -1,4 +1,4 @@
-const { fmtSoln, fmtAnsWithRuntime } = require('../util.js');
+const { fmtAnsWithRuntime } = require('../util.js');
 
 const getPoints = (winningNumbers, cardNumbers) => 
   cardNumbers.reduce((points, cardNumber) => {

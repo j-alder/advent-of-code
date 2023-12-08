@@ -1,7 +1,3 @@
-function fmtSoln(ansOne, ansTwo) {
-  console.log(`part one: ${ansOne ?? 'incomplete'}\npart two: ${ansTwo ?? 'incomplete'}`);
-}
-
 function withRuntime(cb) {
   const start = performance.now();
   return [cb(), performance.now() - start];
@@ -23,7 +19,6 @@ function readInput(year, day, test) {
 }
 
 module.exports = {
-  fmtSoln,
   fmtAnsWithRuntime,
   readInput,
 };

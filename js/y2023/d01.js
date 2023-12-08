@@ -1,4 +1,4 @@
-const { fmtSoln, fmtAnsWithRuntime } = require('../util.js');
+const { fmtAnsWithRuntime } = require('../util.js');
 
 const partOne = (input) =>
   input.reduce((total, calibration) => {

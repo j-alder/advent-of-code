@@ -1,4 +1,4 @@
-const { fmtSoln } = require('../util.js');
+const { fmtAnsWithRuntime } = require('../util.js');
 
 function calcSeatId(boardingPass) {
   if (boardingPass.length !== 10) return -1;
@@ -39,7 +39,7 @@ function partTwo(input) {
 
 function soln(rawInput) {
   const input = rawInput.split('\n');
-  fmtSoln(partOne(input), partTwo(input));
+  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
 }
 
 module.exports = { soln };
