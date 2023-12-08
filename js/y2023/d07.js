@@ -3,38 +3,37 @@ const { fmtAnsWithRuntime } = require('../util.js');
 function fmtHand(handStr) {
   const hand = {};
   for (let card of handStr) {
-    const weight = score[card];
-    hand[weight] = (hand[weight] ?? 0) + 1
+    hand[card] = (hand[card] ?? 0) + 1
   }
   return hand;
 }
 
-const cards = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+const cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
 
 const score = (card) => cards.indexOf(card) + 1;
 
 function scoreHandType(hand) {
   const counts = Object.values(fmtHand(hand));
-  if (counts.includes(5)) return 70_000_000_000;
-  else if (counts.includes(4)) return 60_000_000_000;
-  else if (counts.includes(3) && counts.includes(2)) return 50_000_000_000;
-  else if (counts.includes(3)) return 40_000_000_000;
-  else if (counts.filter(v => v === 2).length === 2) return 30_000_000_000;
-  else if (counts.includes(2)) return 20_000_000_000;
-  else return 10_000_000_000;
+  const highest = Math.max(...counts);
+  if (highest == 5) return 70_000_000_000_000;
+  else if (highest == 4) return 60_000_000_000_000;
+  else if (counts.includes(3) && counts.includes(2)) return 50_000_000_000_000;
+  else if (highest == 3) return 40_000_000_000_000;
+  else if (counts.filter(v => v === 2).length === 2) return 30_000_000_000_000;
+  else if (highest == 2) return 20_000_000_000_000;
+  else return 10_000_000_000_000;
 }
 
 const scoreHighCards = (hand) =>
   hand.split('').reduce((total, card, idx) => 
     total + score(card) * 100 ** (hand.length - idx), 0);
 
-const scoreHand = (hand) => 
-  scoreHandType(hand) + scoreHighCards(hand);
+const scoreHand = (hand) => scoreHandType(hand) + scoreHighCards(hand);
 
 const partOne = (input) =>
   input
-    .sort(([handA], [handB]) => scoreHand(handA) - scoreHand(handB))
-    .reduce((acc, [_, bid], idx) => acc + (bid * (input.length - idx)), 0);
+    .sort(([handA], [handB]) => scoreHand(handB) - scoreHand(handA))
+    .reduce((winnings, [_, bid], idx) => winnings + bid * (input.length - idx), 0);
 
 function partTwo(input) {
 }
