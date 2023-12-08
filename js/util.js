@@ -10,12 +10,10 @@ function withRuntime(cb) {
 function fmtAnsWithRuntime(cb1, cb2) {
   const [ansOne, rtOne] = withRuntime(cb1)
   console.log(`
-  part one: ${ansOne ?? 'incomplete'}${ansOne ? `\n  runtime (ms): ${rtOne.toFixed(4)}` : ''}
-  `);
+  part one: ${ansOne ?? 'incomplete'}${ansOne ? `\n  runtime (ms): ${rtOne.toFixed(4)}` : ''}`);
   const [ansTwo, rtTwo] = withRuntime(cb2);
   console.log(`
-  part two: ${ansTwo ?? 'incomplete'}${ansTwo ? `\n  runtime (ms): ${rtTwo.toFixed(4)}` : ''}
-  `);
+  part two: ${ansTwo ?? 'incomplete'}${ansTwo ? `\n  runtime (ms): ${rtTwo.toFixed(4)}` : ''}`);
 }
 
 function readInput(year, day, test) {
