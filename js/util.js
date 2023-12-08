@@ -8,12 +8,12 @@ function withRuntime(cb) {
 }
 
 function fmtAnsWithRuntime(cb1, cb2) {
-  const start = performance.now();
   const [ansOne, rtOne] = withRuntime(cb1)
-  const [ansTwo, rtTwo] = withRuntime(cb2);
   console.log(`
   part one: ${ansOne ?? 'incomplete'}${ansOne ? `\n  runtime (ms): ${rtOne.toFixed(4)}` : ''}
-
+  `);
+  const [ansTwo, rtTwo] = withRuntime(cb2);
+  console.log(`
   part two: ${ansTwo ?? 'incomplete'}${ansTwo ? `\n  runtime (ms): ${rtTwo.toFixed(4)}` : ''}
   `);
 }
