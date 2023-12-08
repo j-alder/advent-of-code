@@ -1,73 +1,201 @@
 const { fmtSoln } = require('../util.js');
 
-const cardToScore = {
-  'A': '14',
-  'Q': '13',
-  'K': '12',
-  'J': '11',
-  'T': '10',
-  '9': '9',
-  '8': '8',
-  '7': '7',
-  '6': '6',
-  '5': '5',
-  '4': '4',
-  '3': '3',
-  '2': '2',
+const score = {
+  'A': 14,
+  'Q': 13,
+  'K': 12,
+  'J': 11,
+  'T': 10,
+  '9': 9,
+  '8': 8,
+  '7': 7,
+  '6': 6,
+  '5': 5,
+  '4': 4,
+  '3': 3,
+  '2': 2,
 };
+
+function compare(left, right) {
+  for (let i = 0; i < left.length; i++) {
+    if (score[left[i]] > score[right[i]]) return true;
+    else if (score[left[i]] < score[right[i]]) return false;
+  }
+}
+
+function sortType(typeArr) {
+  if (typeArr.length <= 1) return typeArr;
+  const mid = Math.floor(typeArr.length / 2);
+  const left = sortType(typeArr.slice(0, mid));
+  const right = sortType(typeArr.slice(mid));
+  const res = [];
+  let i = 0, j = 0;
+  while (i < left.length && j < right.length) {
+    if (compare(left[i][0], right[j][0])) res.push(left[i++]);
+    else res.push(right[j++]);
+  }
+  while (i < left.length) res.push(left[i++]);
+  while (j < right.length) res.push(right[j++]);
+  return res;
+}
 
 function fmtHand(handStr) {
   const hand = {};
-  handStr.split('').forEach(card => {
-    const weight = cardToScore[card];
-    if (hand[weight]) {
-      hand[weight] += 1;
-    } else {
-      hand[weight] = 1;
-    }
-  });
+  for (let card of handStr) {
+    const weight = score[card];
+    hand[weight] = (hand[weight] ?? 0) + 1
+  }
   return hand;
 }
 
-const fmtPartOne = (input) =>
-  input.map(ln => {
-    const [hand, wager] = ln.split(' ');
-    return [fmtHand(hand), Number(wager)]
-  });
+function groupTypes(input) {
+  const rank = { '5k': [], '4k': [], 'fh': [], '3k': [], '2p': [], '1p': [], 'hc': [] };
+  for (let el of input) {
+    const handCounts = fmtHand(el[0]);
+    if (Object.values(handCounts).every(v => v === 5)) rank['5k'].push(el);
+    else if (Object.values(handCounts).some(v => v === 4)) rank['4k'].push(el);
+    else if (Object.values(handCounts).filter(v => v === 3).length === 1 && Object.values(handCounts).filter(v => v === 2).length === 1) rank['fh'].push(el);
+    else if (Object.values(handCounts).some(v => v === 3)) rank['3k'].push(el);
+    else if (Object.values(handCounts).filter(v => v === 2).length === 2) rank['2p'].push(el);
+    else if (Object.values(handCounts).filter(v => v === 2).length === 1) rank['1p'].push(el);
+    else rank['hc'].push(el);
+  }
 
-function groupTypes(hands) {
-  const rank = {
-    '5k': [],
-    '4k': [],
-    'fh': [],
-    '3k': [],
-    '2p': [],
-    '1p': [],
-    'hc': [],
-  };
-  hands.forEach(hand => {
-    if (Object.values(hand[0]).every(v => v === 5)) rank['5k'].push(hand);
-    else if (Object.values(hand[0]).some(v => v === 4)) rank['4k'].push(hand);
-    else if (Object.values(hand[0]).some(v => v === 3) && Object.values(hand[0]).filter(v => v === 2).length === 1) rank['fh'].push(hand);
-    else if (Object.values(hand[0]).some(v => v === 3)) rank['3k'].push(hand);
-    else if (Object.values(hand[0]).filter(v => v === 2).length === 2) rank['2p'].push(hand);
-    else if (Object.values(hand[0]).filter(v => v === 2).length === 1) rank['1p'].push(hand);
-    else rank['hc'].push(hand);
-  });
   return rank;
 }
 
+const fmtInput = (input) =>
+  input.split('\n').map(ln => {
+    const lns = ln.split(' ');
+    return [lns[0], Number(lns[1])];
+  });
+
 function partOne(input) {
-  console.log(groupTypes(fmtPartOne(input)));
+  const totalHands = input.length;
+  let totalScore = 0;
+  const typeGroups = groupTypes(input);
+  const sorted = Object.values(typeGroups).flatMap(typeGroup => sortType(typeGroup));
+  let i = input.length;
+  while (sorted.length) {
+    const hand = sorted.shift();
+    totalScore += hand[1] * i;
+    i--;
+  }
+  return totalScore;
 }
 
 function partTwo(input) {
 }
 
 function soln(rawInput) {
-  const input = rawInput.split('\n');
-  fmtSoln(partOne(input), partTwo(input));
+  const input = fmtInput(rawInput);
+  fmtSoln(main({ lines: rawInput.split('\n') }), partTwo(input));
 }
+
+
+const CARDS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+
+const toCardValue = card => CARDS.indexOf(card) + 1;
+
+// The high-card value for a hand is the value of each card summed together,
+// but with the preceding card scores multiplied by orders of magnitude.
+// Examples:
+//   - 23456 ->   102,030,405
+//   - AKQJT -> 1,312,111,009
+const scoreHighCards = (hand) => {
+  const placeValues = hand
+    .slice()
+    .reverse()
+    .map((card, index) => toCardValue(card) * 100 ** index);
+
+  return sum(placeValues);
+}
+
+// Hand types are always more valuable than high cards, so the get values the
+// next order of magnitude above the best high card value.
+const scoreHandType = (hand) => {
+  const cardCounts = countGroups(hand);
+  const counts = Object.values(cardCounts);
+  const highCount = greatest(counts);
+
+  if (highCount === 5) {
+    return 70_000_000_000;
+  }
+  if (highCount === 4) {
+    return 60_000_000_000;
+  }
+  if (counts.includes(3) && counts.includes(2)) {
+    return 50_000_000_000;
+  }
+  if (highCount === 3) {
+    return 40_000_000_000;
+  }
+  if (count(counts, 2) === 2) {
+    return 30_000_000_000;
+  }
+  if (highCount === 2) {
+    return 20_000_000_000;
+  }
+  return 10_000_000_000;
+};
+
+// Every hand ends up with a unique numerical value down to the last high card
+const scoreHand = hand => scoreHandType(hand) + scoreHighCards(hand);
+
+
+function main({ lines }) {
+  const hands = lines
+    .map(line => line.split(' '))
+    .map(([hand, bid]) => [hand.split(''), Number(bid)]);
+
+  const winnings = hands
+    .slice()
+    .sort(([handA], [handB]) => scoreHand(handA) - scoreHand(handB))
+    .map(([_, bid], index) => bid * (index + 1));
+
+  return sum(winnings);
+}
+
+const countGroups = (strOrArray, groupFn = x => x) => {
+  const counts = {};
+
+  for (let i = 0; i < strOrArray.length; i += 1) {
+    const group = groupFn(strOrArray[i], i, strOrArray);
+
+    if (hasProp(counts, group)) {
+      counts[group] += 1;
+    } else {
+      counts[group] = 1;
+    }
+  }
+
+  return counts;
+};
+
+const greatest = (items, xform = (x) => x) => (
+  firstOfSort(items, (a, b) => xform(b) - xform(a))
+);
+
+const count = (items, match = Boolean) => {
+  const matchFn = typeof match === 'function'
+    ? match
+    : (item => item === match);
+
+
+  return items.filter(matchFn).length;
+};
+
+const sum = nums => nums.reduce((total, num) => total + num, 0);
+
+const hasProp = (val, prop) => {
+  if (val == null) {
+    return false;
+  }
+
+  return hasOwnProperty.call(val, prop);
+};
+
+const firstOfSort = (items, sortFn) => items.slice().sort(sortFn)[0];
 
 module.exports = { soln };
 
@@ -171,5 +299,37 @@ the result of multiplying each hand's bid with its rank
 this example are 6440.
 
 Find the rank of every hand in your set. What are the total winnings?
+
+--- Part Two ---
+
+To make things a little more interesting, the Elf introduces one additional 
+rule. Now, J cards are jokers - wildcards that can act like whatever card would 
+make the hand the strongest type possible.
+
+To balance this, J cards are now the weakest individual cards, weaker even than 
+2. The other cards stay in the same order: A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2, J.
+
+J cards can pretend to be whatever card is best for the purpose of determining 
+hand type; for example, QJJQ2 is now considered four of a kind. However, for the 
+purpose of breaking ties between two hands of the same type, J is always treated 
+as J, not the card it's pretending to be: JKKK2 is weaker than QQQQ2 because J 
+is weaker than Q.
+
+Now, the above example goes very differently:
+
+32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483
+
+    32T3K is still the only one pair; it doesn't contain any jokers, so its strength doesn't increase.
+    KK677 is now the only two pair, making it the second-weakest hand.
+    T55J5, KTJJT, and QQQJA are now all four of a kind! T55J5 gets rank 3, QQQJA gets rank 4, and KTJJT gets rank 5.
+
+With the new joker rule, the total winnings in this example are 5905.
+
+Using the new joker rule, find the rank of every hand in your set. What are the 
+new total winnings?
 
 */
