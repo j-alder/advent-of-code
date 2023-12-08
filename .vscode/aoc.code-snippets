@@ -20,7 +20,7 @@
 		"prefix": "jsbp",
 		"description": "single day solution setup",
 		"body": [
-			"const { fmtSoln } = require('../util.js');",
+			"const { fmtAnsWithRuntime } = require('../util.js');",
 			"",
 			"function partOne(input) {",
 			"}",
@@ -30,13 +30,13 @@
 			"",
 			"function soln(rawInput) {",
 			"  const input = rawInput.split('\\n');",
-			"  fmtSoln(partOne(input), partTwo(input));"
+			"  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));"
 			"}",
 			"",
 			"module.exports = { soln };",
 			"",
 			"/*",
-			"",
+			"$0",
 			"*/"
 		],
 	},
