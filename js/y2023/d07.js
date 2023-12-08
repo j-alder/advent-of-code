@@ -32,8 +32,8 @@ const scoreHand = (hand) => scoreHandType(hand) + scoreHighCards(hand);
 
 const partOne = (input) =>
   input
-    .sort(([handA], [handB]) => scoreHand(handB) - scoreHand(handA))
-    .reduce((winnings, [_, bid], idx) => winnings + bid * (input.length - idx), 0);
+    .sort(([handA], [handB]) => scoreHand(handA) - scoreHand(handB))
+    .reduce((winnings, [_, bid], idx) => winnings + bid * (idx + 1), 0);
 
 function partTwo(input) {
 }
