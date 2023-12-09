@@ -18,8 +18,11 @@ function readInput(year, day, test) {
   return file;
 }
 
+const sum = (arr) => arr.reduce((s, n) => s + n, 0);
+
 module.exports = {
   fmtAnsWithRuntime,
   readInput,
+  sum,
 };
 
