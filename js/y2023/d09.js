@@ -1,17 +1,23 @@
 const { fmtAnsWithRuntime, sum } = require('../util.js');
 
-function getDeltas(history) {
-  const all = [history];
-  while (all[all.length - 1].some(n => n !== 0)) {
+function calcDeltas(history) {
+  const deltas = [history];
+  while (deltas[deltas.length - 1].some(n => n !== 0)) {
     const next = [];
-    const last = all[all.length - 1];
+    const last = deltas[deltas.length - 1];
     for (let i = 1; i < last.length; i++) {
       next.push(last[i] - last[i - 1]);
     }
-    all.push(next);
+    deltas.push(next);
   }
-  return all.filter(it => it.length > 0);
+  return deltas.filter(it => it.length > 0);
 }
+
+const fmtDeltas = (lns) => 
+  lns.map(ln => ln
+      .split(' ')
+      .map(Number))
+    .map(calcDeltas);
 
 function nextNumber(deltas) {
   let curr = 0;
@@ -28,12 +34,6 @@ function prevNumber(deltas) {
   }
   return curr;
 }
-
-const fmtDeltas = (lns) => 
-  lns.map(ln => ln
-      .split(' ')
-      .map(Number))
-    .map(getDeltas);
 
 const partOne = (deltas) => sum(deltas.map(nextNumber));
 
