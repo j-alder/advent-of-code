@@ -78,16 +78,6 @@ const getNextNode = (node, matrix, path) => {
   return new Node(validPipe[1][1], validPipe[1][2], validPipe[1][0]);
 };
 
-const getValidPipes = (node, matrix, path) =>
-  Object.entries(getNeighbors(node.x, node.y, matrix))
-    .filter(([k, _]) => k === 'n' || k === 's' || k === 'e' || k === 'w')
-    .reduce((result, [dir, val]) => {
-      if (val && isValidPipe(val[0], node.type, dir, val[1], val[2], path)) {
-        result.push(new Node(val[1], val[2], val[0]));
-      }
-      return result;
-    }, []);
-
 function partOne(root, matrix) {
   let steps = 0;
   let curr = root;
@@ -100,9 +90,6 @@ function partOne(root, matrix) {
     neighbor = getNextNode(curr, matrix, path);
   }
   return Math.ceil(steps / 2);
-}
-
-function partTwo(input) {
 }
 
 function soln(rawInput) {
