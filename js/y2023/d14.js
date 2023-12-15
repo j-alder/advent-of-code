@@ -1,7 +1,34 @@
 const { fmtAnsWithRuntime } = require('../util.js');
 
-function partOne(input) {
+const calcRowLoad = (multiplier, row) => 
+  row.reduce((rocks, char) => rocks + (char === 'O' ? 1 : 0), 0) * multiplier;
+
+const calcDishLoad = (dish) => 
+  dish.reduce((load, row, i) => load + calcRowLoad(dish.length - i, row), 0);
+
+function tiltNorth(dish) {
+  for (let i = 0; i < dish[0].length; i++) {
+    let curr = 0;
+    for (let j = 0; j < dish.length; j++) {
+      if (dish[j][i] === 'O') {
+        if (j > curr) {
+          dish[j][i] = '.';
+          dish[curr][i] = 'O';
+          curr = curr + 1;
+        } else {
+          curr = j + 1;
+        }
+      }
+      if (dish[j][i] === '#') {
+        curr = j + 1;
+      }
+    }
+  }
+  return dish;
 }
+
+const partOne = (input) =>
+  calcDishLoad(tiltNorth(input.map(ln => ln.split(''))));
 
 function partTwo(input) {
 }
@@ -92,5 +119,55 @@ this example, the total load is 136.
 
 Tilt the platform so that the rounded rocks all roll north. Afterward, what 
 is the total load on the north support beams?
+
+--- Part Two ---
+
+The parabolic reflector dish deforms, but not in a way that focuses the beam. To do that, you'll need to move the rocks to the edges of the platform. Fortunately, a button on the side of the control panel labeled "spin cycle" attempts to do just that!
+
+Each cycle tilts the platform four times so that the rounded rocks roll north, then west, then south, then east. After each tilt, the rounded rocks roll as far as they can before the platform tilts in the next direction. After one cycle, the platform will have finished rolling the rounded rocks in those four directions in that order.
+
+Here's what happens in the example above after each of the first few cycles:
+
+After 1 cycle:
+.....#....
+....#...O#
+...OO##...
+.OO#......
+.....OOO#.
+.O#...O#.#
+....O#....
+......OOOO
+#...O###..
+#..OO#....
+
+After 2 cycles:
+.....#....
+....#...O#
+.....##...
+..O#......
+.....OOO#.
+.O#...O#.#
+....O#...O
+.......OOO
+#..OO###..
+#.OOO#...O
+
+After 3 cycles:
+.....#....
+....#...O#
+.....##...
+..O#......
+.....OOO#.
+.O#...O#.#
+....O#...O
+.......OOO
+#...O###.O
+#.OOO#...O
+
+This process should work if you leave it running long enough, but you're still worried about the north support beams. To make sure they'll survive for a while, you need to calculate the total load on the north support beams after 1000000000 cycles.
+
+In the above example, after 1000000000 cycles, the total load on the north support beams is 64.
+
+Run the spin cycle for 1000000000 cycles. Afterward, what is the total load on the north support beams?
 
 */
