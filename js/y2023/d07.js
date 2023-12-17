@@ -8,12 +8,38 @@ function fmtHand(handStr) {
   return hand;
 }
 
+const highestCard = (hand) =>
+  cards[Math.max(...Object.keys(hand).map(k => cards.indexOf(k)))];
+
+function fmtHandWithJokers(handStr) {
+  const hand = fmtHand(handStr);
+  let handKeys = Object.keys(hand);
+  if (handKeys.length === 1) return hand;
+  const jokers = hand['J'] ?? 0;
+
+  if (jokers === 0) {
+    return hand;
+  }
+
+  delete hand['J'];
+  handKeys = Object.keys(hand);
+
+  if (handKeys.length === 1) {
+    hand[handKeys[0]] += jokers;
+    return hand;
+  }
+
+  const key = highestCard(hand);
+  return { ...hand, [key]: hand[key] + jokers };
+}
+
 const cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+const jokerCards = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'];
 
-const score = (card) => cards.indexOf(card) + 1;
+const score = (card, jokers) => (jokers ? jokerCards.indexOf(card) : cards.indexOf(card)) + 1;
 
-function scoreHandType(hand) {
-  const counts = Object.values(fmtHand(hand));
+function scoreHandType(hand, jokers = false) {
+  const counts = Object.values(jokers ? fmtHandWithJokers(hand) : fmtHand(hand));
   const highest = Math.max(...counts);
   if (highest == 5) return 70_000_000_000_000;
   else if (highest == 4) return 60_000_000_000_000;
@@ -24,19 +50,21 @@ function scoreHandType(hand) {
   else return 10_000_000_000_000;
 }
 
-const scoreHighCards = (hand) =>
+const scoreHighCards = (hand, jokers) =>
   hand.split('').reduce((total, card, idx) => 
-    total + score(card) * 100 ** (hand.length - idx), 0);
+    total + score(card, jokers) * 100 ** (hand.length - idx), 0);
 
-const scoreHand = (hand) => scoreHandType(hand) + scoreHighCards(hand);
+const scoreHand = (hand, jokers = false) => scoreHandType(hand, jokers) + scoreHighCards(hand, jokers);
 
 const partOne = (input) =>
   input
     .sort(([handA], [handB]) => scoreHand(handA) - scoreHand(handB))
     .reduce((winnings, [_, bid], idx) => winnings + bid * (idx + 1), 0);
 
-function partTwo(input) {
-}
+const partTwo = (input) => 
+  input
+    .sort(([handA], [handB]) => scoreHand(handA, true) - scoreHand(handB, true))
+    .reduce((winnings, [_, bid], idx) => winnings + bid * (idx + 1), 0);
 
 const fmtInput = (input) =>
   input.split('\n').map(ln => {
