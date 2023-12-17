@@ -1,5 +1,16 @@
 const { fmtAnsWithRuntime } = require('../util.js');
 
+const FIVE_OF_A_KIND = 70_000_000_000_000;
+const FOUR_OF_A_KIND = 60_000_000_000_000;
+const FULL_HOUSE = 50_000_000_000_000;
+const THREE_OF_A_KIND = 40_000_000_000_000;
+const TWO_PAIR = 30_000_000_000_000;
+const TWO_OF_A_KIND = 20_000_000_000_000;
+const HIGH_CARD = 10_000_000_000_000;
+
+const cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+const jokerCards = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'];
+
 function fmtHand(handStr) {
   const hand = {};
   for (let card of handStr) {
@@ -8,62 +19,75 @@ function fmtHand(handStr) {
   return hand;
 }
 
-const highestCard = (hand) =>
-  cards[Math.max(...Object.keys(hand).map(k => cards.indexOf(k)))];
-
-function fmtHandWithJokers(handStr) {
-  const hand = fmtHand(handStr);
-  let handKeys = Object.keys(hand);
-  if (handKeys.length === 1) return hand;
-  const jokers = hand['J'] ?? 0;
-
-  if (jokers === 0) {
-    return hand;
-  }
-
-  delete hand['J'];
-  handKeys = Object.keys(hand);
-
-  if (handKeys.length === 1) {
-    hand[handKeys[0]] += jokers;
-    return hand;
-  }
-
-  const key = highestCard(hand);
-  return { ...hand, [key]: hand[key] + jokers };
-}
-
-const cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
-const jokerCards = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'];
-
-const score = (card, jokers) => (jokers ? jokerCards.indexOf(card) : cards.indexOf(card)) + 1;
+/* --- PART 1 --- */
 
 function scoreHandType(hand, jokers = false) {
   const counts = Object.values(jokers ? fmtHandWithJokers(hand) : fmtHand(hand));
-  const highest = Math.max(...counts);
-  if (highest == 5) return 70_000_000_000_000;
-  else if (highest == 4) return 60_000_000_000_000;
-  else if (counts.includes(3) && counts.includes(2)) return 50_000_000_000_000;
-  else if (highest == 3) return 40_000_000_000_000;
-  else if (counts.filter(v => v === 2).length === 2) return 30_000_000_000_000;
-  else if (highest == 2) return 20_000_000_000_000;
-  else return 10_000_000_000_000;
+  const alike = Math.max(...counts);
+  if (alike == 5) return FIVE_OF_A_KIND;
+  else if (alike == 4) return FOUR_OF_A_KIND;
+  else if (counts.includes(3) && counts.includes(2)) return FULL_HOUSE;
+  else if (alike == 3) return THREE_OF_A_KIND;
+  else if (counts.filter(v => v === 2).length === 2) return TWO_PAIR;
+  else if (alike == 2) return TWO_OF_A_KIND;
+  else return HIGH_CARD;
 }
 
-const scoreHighCards = (hand, jokers) =>
+const score = (card) => cards.indexOf(card) + 1;
+
+const scoreHighCards = (hand) =>
   hand.split('').reduce((total, card, idx) => 
-    total + score(card, jokers) * 100 ** (hand.length - idx), 0);
+    total + score(card) * 100 ** (hand.length - idx), 0);
 
-const scoreHand = (hand, jokers = false) => scoreHandType(hand, jokers) + scoreHighCards(hand, jokers);
+const scoreHand = (hand) => scoreHandType(hand) + scoreHighCards(hand);
 
-const partOne = (input) =>
-  input
-    .sort(([handA], [handB]) => scoreHand(handA) - scoreHand(handB))
-    .reduce((winnings, [_, bid], idx) => winnings + bid * (idx + 1), 0);
+const partOne = (input) => 
+   input
+     .sort(([handA], [handB]) => scoreHand(handA) - scoreHand(handB))
+     .reduce((winnings, [_, bid], idx) => winnings + bid * (idx + 1), 0);
+
+/* --- PART 2 --- */
+
+function scoreHandTypeWithJokers(handStr) {
+  const hand = fmtHand(handStr);
+  let uniqueCards = Object.keys(hand);
+
+  if (uniqueCards.length === 1) return FIVE_OF_A_KIND;
+
+  const jokers = hand['J'];
+
+  if (!jokers) return scoreHandType(handStr);
+
+  delete hand['J'];
+  uniqueCards = Object.keys(hand);
+  const entries = Object.entries(hand);
+
+  if (uniqueCards.length === 1) return FIVE_OF_A_KIND;
+
+  if (uniqueCards.length === 2) {
+    if (entries.every(([_, count]) => count === 2) && jokers === 1) {
+      return FULL_HOUSE;
+    } else {
+      return FOUR_OF_A_KIND;
+    }
+  }
+
+  if (uniqueCards.length === 3) return THREE_OF_A_KIND;
+
+  if (uniqueCards.length === 4) return TWO_OF_A_KIND;
+}
+
+const scoreWithJokers = (card) => jokerCards.indexOf(card) + 1;
+
+const scoreHighCardsWithJokers = (hand) =>
+  hand.split('').reduce((total, card, idx) => 
+    total + scoreWithJokers(card) * 100 ** (hand.length - idx), 0);
+
+const scoreHandWithJokers = (hand) => scoreHandTypeWithJokers(hand) + scoreHighCardsWithJokers(hand);
 
 const partTwo = (input) => 
   input
-    .sort(([handA], [handB]) => scoreHand(handA, true) - scoreHand(handB, true))
+    .sort(([handA], [handB]) => scoreHandWithJokers(handA) - scoreHandWithJokers(handB))
     .reduce((winnings, [_, bid], idx) => winnings + bid * (idx + 1), 0);
 
 const fmtInput = (input) =>
