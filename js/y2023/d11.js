@@ -1,14 +1,70 @@
 const { fmtAnsWithRuntime } = require('../util.js');
 
-function partOne(input) {
+function makeExpand(starMap, n = 1) {
+  const galaxies = [];
+  starMap.forEach((row, x) => {
+    row.forEach((chr, y) => {
+      if (chr === '#') {
+        galaxies.push([x, y]);
+      }
+    });
+  });
+  const expandedGalaxies = Array.from(galaxies).map(el => Array.from(el));
+  starMap.forEach((row, x) => {
+    if (row.every(c => c === '.')) {
+      for (let i = 0; i < galaxies.length; i++) {
+        if (galaxies[i][0] > x) {
+          expandedGalaxies[i][0] += n;
+        }
+      }
+    }
+  });
+  starMap[0].forEach((_, y) => {
+    let needsCol = true;
+    for (let i = 0; i < starMap.length; i++) {
+      if (starMap[i][y] !== '.') {
+        needsCol = false;
+        break;
+      }
+    }
+    if (needsCol) {
+      for (let i = 0; i < galaxies.length; i++) {
+        if (galaxies[i][1] > y) {
+          expandedGalaxies[i][1] += n;
+        }
+      }
+    }
+  });
+  return expandedGalaxies;
+}
+
+function solution(galaxies) {
+  const galaxyMap = {};
+  galaxies.forEach((galaxy, i) => {
+    const unMappedNeighbors = [];
+    galaxies.forEach((galaxy2, j) => {
+      if (i !== j && !galaxyMap[`${galaxy2[0]},${galaxy2[1]}`]) {
+        unMappedNeighbors.push(galaxy2);
+      }
+    });
+    galaxyMap[`${galaxy.toString().trim(/\[\]/)}`] = unMappedNeighbors;
+  });
+  let totalDistances = 0;
+  Object.entries(galaxyMap).forEach(([coord, neighbors]) => {
+    const [x, y] = coord.split(',').map(Number);
+    neighbors.forEach(([x2, y2]) => {
+      totalDistances += Math.abs(x - x2) + Math.abs(y - y2);
+    });
+  });
+  return totalDistances;
 }
 
 function partTwo(input) {
 }
 
 function soln(rawInput) {
-  const input = rawInput.split('\n');
-  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
+  const input = rawInput.split('\n').map(ln => ln.split(''));
+  fmtAnsWithRuntime(() => solution(makeExpand(input)), () => solution(makeExpand(input, 100)));
 }
 
 module.exports = { soln };
@@ -68,18 +124,18 @@ In the above example, three columns and two rows contain no galaxies:
 These rows and columns need to be twice as big; the result of cosmic expansion 
 therefore looks like this:
 
-....#........
-.........#...
-#............
+....#........ 0,4
+.........#... 1,9
+#............ 2,0
 .............
 .............
-........#....
-.#...........
-............#
+........#.... 5,8
+.#........... 6,1
+............# 7,12
 .............
 .............
-.........#...
-#....#.......
+.........#... 10,9
+#....#....... 11,0, 11,5
 
 Equipped with this expanded universe, the shortest path between every pair of 
 galaxies can be found. It can help to assign every galaxy a unique number:
@@ -131,5 +187,24 @@ all 36 pairs of galaxies is 374.
 
 Expand the universe, then find the length of the shortest path between every pair 
 of galaxies. What is the sum of these lengths?
+
+--- Part Two ---
+
+The galaxies are much older (and thus much farther apart) than the researcher 
+initially estimated.
+
+Now, instead of the expansion you did before, make each empty row or column one 
+million times larger. That is, each empty row should be replaced with 1000000 empty 
+rows, and each empty column should be replaced with 1000000 empty columns.
+
+(In the example above, if each empty row or column were merely 10 times larger, the 
+sum of the shortest paths between every pair of galaxies would be 1030. If each 
+empty row or column were merely 100 times larger, the sum of the shortest paths between 
+every pair of galaxies would be 8410. However, your universe will need to expand far 
+beyond these values.)
+
+Starting with the same initial image, expand the universe according to these new rules, 
+then find the length of the shortest path between every pair of galaxies. What is the 
+sum of these lengths?
 
 */
