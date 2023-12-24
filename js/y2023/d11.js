@@ -1,6 +1,6 @@
 const { fmtAnsWithRuntime } = require('../util.js');
 
-function makeExpand(starMap, n = 1) {
+function makeExpand(starMap, n) {
   const galaxies = [];
   starMap.forEach((row, x) => {
     row.forEach((chr, y) => {
@@ -38,7 +38,8 @@ function makeExpand(starMap, n = 1) {
   return expandedGalaxies;
 }
 
-function solution(galaxies) {
+function solution(input, expansionRate) {
+  const galaxies = makeExpand(input, expansionRate > 1 ? expansionRate - 1 : expansionRate);
   const galaxyMap = {};
   galaxies.forEach((galaxy, i) => {
     const unMappedNeighbors = [];
@@ -59,12 +60,11 @@ function solution(galaxies) {
   return totalDistances;
 }
 
-function partTwo(input) {
-}
-
 function soln(rawInput) {
   const input = rawInput.split('\n').map(ln => ln.split(''));
-  fmtAnsWithRuntime(() => solution(makeExpand(input)), () => solution(makeExpand(input, 100)));
+  fmtAnsWithRuntime(
+    () => solution(input, 1), 
+    () => solution(input, 1000000));
 }
 
 module.exports = { soln };
