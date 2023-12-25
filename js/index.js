@@ -1,5 +1,10 @@
 const process = require('process');
-const { readInput } = require('./util');
+
+function readInput(year, day, test) {
+  const fs = require('node:fs');
+  const file = fs.readFileSync(`../input/y${year}/d${day < 10 ? `0${day}` : day}${test ? '_test' : ''}.txt`, 'utf8');
+  return file;
+}
 
 const year = process.argv[2];
 const day = process.argv[3];
