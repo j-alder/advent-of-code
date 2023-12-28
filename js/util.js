@@ -56,17 +56,43 @@ const isPalindrome = (str) =>
   str === str.split('').reverse().join('');
 
 /**
+ * Rotate a 2d array 90 degrees anti-clockwise
+ * @param {any[][]} matrix 
+ * @returns {any[][]}
+ */
+function rotateMatrixAntiClockwise(matrix) {
+  const len = matrix[0].length;
+  const out = [];
+  for (let i = 0; i < len; i++) { // 0 - 2
+    out[i] = [];
+    /* 
+    [
+      0 [],
+      1 [],
+      2 []
+    ]
+    */
+    for (let j = 0; j < matrix.length; j++) { // 0 - 1
+      // out[0][0] = matrix[0][2] / matrix[j][len - i - 1]
+      // out[0][1] = matrix[1][2] / matrix[j][len - i - 1]
+      out[i][j] = matrix[j][len - i - 1];
+    }
+  }
+  return out;
+}
+
+/**
  * Rotate a 2d array 90 degrees clockwise
  * @param {any[][]} matrix 
  * @returns {any[][]}
  */
-function rotateMatrix(matrix) {
-  const len = matrix.length;
+function rotateMatrixClockwise(matrix) {
+  const len = matrix[0].length;
   const out = [];
   for (let i = 0; i < len; i++) {
     out[i] = [];
-    for (let j = 0; j < len; j++) {
-      out[i][j] = matrix[len - j - 1][i];
+    for (let j = 0; j < matrix.length; j++) {
+      out[i][j] = matrix[matrix.length - j - 1][i];
     }
   }
   return out;
@@ -79,7 +105,8 @@ module.exports = {
   fmtAnsWithRuntime,
   getNeighbors,
   isPalindrome,
-  rotateMatrix,
+  rotateMatrixAntiClockwise,
+  rotateMatrixClockwise,
   sum,
 };
 
