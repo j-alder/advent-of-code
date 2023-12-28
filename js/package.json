@@ -1,0 +1,14 @@
+{
+  "name": "aoc-js",
+  "version": "1.0.0",
+  "description": "advent of code answers in javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Jonathon Alder",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
