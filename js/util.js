@@ -65,16 +65,7 @@ function rotateMatrixAntiClockwise(matrix) {
   const out = [];
   for (let i = 0; i < len; i++) { // 0 - 2
     out[i] = [];
-    /* 
-    [
-      0 [],
-      1 [],
-      2 []
-    ]
-    */
     for (let j = 0; j < matrix.length; j++) { // 0 - 1
-      // out[0][0] = matrix[0][2] / matrix[j][len - i - 1]
-      // out[0][1] = matrix[1][2] / matrix[j][len - i - 1]
       out[i][j] = matrix[j][len - i - 1];
     }
   }
