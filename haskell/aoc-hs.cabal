@@ -1,0 +1,28 @@
+cabal-version:      2.4
+name:               aoc-hs
+version:            0.1.0.0
+author:             j-alder
+
+extra-source-files:
+    README.md
+
+library
+    -- exposed-modules:  Y23
+
+    -- Modules included in this library but not exported.
+    other-modules:    Util
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+    build-depends:    time ^>=1.12.2, base ^>=4.17.2.0
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+test-suite aoc-hs-test
+    default-language: Haskell2010
+    type:             exitcode-stdio-1.0
+
+    -- Directories containing source files.
+    -- hs-source-dirs:
+    main-is:          MyLibTest.hs
+    build-depends:    base ^>=4.17.2.0
