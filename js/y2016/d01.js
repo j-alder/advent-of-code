@@ -79,33 +79,50 @@ function updatePos(pos, to, blocks) {
   return newPos;
 }
 
-function partOne(input) {
-  const instructions = input.map(inst => {
-    const x = inst.trim().split('');
-    return [x[0], Number(x.slice(1).join(''))]
-  });
+function partOne(instructions) {
   let currDir = 'N';
   let pos = {
     N: 0,
     S: 0,
     E: 0,
     W: 0
-  }
+  };
   instructions.forEach(([turn, blocks]) => {
     currDir = updateCurrDir(currDir, turn);
-    console.log(`turned ${turn} heading ${blocks} blocks ${currDir}`)
     pos = updatePos(pos, currDir, blocks);
-    console.log(pos);
   });
   return (pos.N + pos.S + pos.E + pos.W);
 }
 
-function partTwo(input) {
+function partTwo(instructions) {
+  let currDir = 'N';
+  let pos = {
+    N: 0,
+    S: 0,
+    E: 0,
+    W: 0
+  };
+  const locs = {};
+  for (const inst of instructions) {
+    const entries = Object.entries(pos);
+    const loc = entries.map(it => it.join('')).join('');
+    if (locs[loc] != null) {
+      return entries.reduce((acc, it) => acc + it[1], 0);
+    } else {
+      locs[loc] = 0;
+    }
+    currDir = updateCurrDir(currDir, inst[0]);
+    pos = updatePos(pos, currDir, inst[1]);
+  }
 }
 
 function soln(rawInput) {
   const input = rawInput.split(',');
-  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
+  const instructions = input.map(inst => {
+    const x = inst.trim().split('');
+    return [x[0], Number(x.slice(1).join(''))]
+  });
+  fmtAnsWithRuntime(() => partOne(instructions), () => partTwo(instructions));
 }
 
 module.exports = { soln };
