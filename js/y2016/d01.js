@@ -102,17 +102,18 @@ function partTwo(instructions) {
     E: 0,
     W: 0
   };
-  const locs = {};
-  for (const inst of instructions) {
-    const entries = Object.entries(pos);
-    const loc = entries.map(it => it.join('')).join('');
-    if (locs[loc] != null) {
-      return entries.reduce((acc, it) => acc + it[1], 0);
-    } else {
-      locs[loc] = 0;
+  const locs = new Set();
+  for (const [turn, blocks] of instructions) {
+    currDir = updateCurrDir(currDir, turn);
+    for (let i = 0; i < blocks; i++) {
+      pos = updatePos(pos, currDir, 1);
+      const loc = Object.values(pos).join('');
+      if (locs.has(loc)) {
+        return Object.values(pos).reduce((acc, it) => acc + it, 0)
+      } else {
+        locs.add(loc);
+      }
     }
-    currDir = updateCurrDir(currDir, inst[0]);
-    pos = updatePos(pos, currDir, inst[1]);
   }
 }
 
