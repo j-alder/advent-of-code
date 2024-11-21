@@ -1,22 +1,105 @@
-const { fmtAnsWithRuntime } = require('../util.js');
-
-const buttons = [
-  [1, 2, 3],
-  [4, 5, 6],
-  [7, 8, 9]
-]
+const { fmtAnsWithRuntime } = require("../util.js");
 
 function partOne(input) {
+  // refactor: use an integer for current button.
+  // U subtracts 3
+  // D adds 3
+  // R adds 1
+  // L subtracts 1
+
+  const getButton = ([y, x]) =>
+    [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ][y][x];
+
   let currPos = [1, 1];
-  let directions = [[0, 1], [0, -1], [-1, 0], [0, -1]]
+  return input
+    .filter((it) => it !== "")
+    .map((ln) =>
+      ln.split("").reduce((ans, dir) => {
+        switch (dir) {
+          case "U":
+            if (currPos[0] - 1 >= 0) {
+              currPos = [currPos[0] - 1, currPos[1]];
+            }
+            break;
+          case "D":
+            if (currPos[0] + 1 <= 2) {
+              currPos = [currPos[0] + 1, currPos[1]];
+            }
+            break;
+          case "L":
+            if (currPos[1] - 1 >= 0) {
+              currPos = [currPos[0], currPos[1] - 1];
+            }
+            break;
+          case "R":
+            if (currPos[1] + 1 <= 2) {
+              currPos = [currPos[0], currPos[1] + 1];
+            }
+            break;
+          default:
+            break;
+        }
+        ans = getButton(currPos);
+        return ans;
+      }, 0)
+    )
+    .join("");
 }
 
 function partTwo(input) {
+  const getButton = ([y, x]) => {
+    try {
+      return [["1"], ["2", "3", "4"], ["5", "6", "7", "8", "9"], ["A", "B", "C"], ["D"]][y][x];
+    } catch {
+      return false;
+    }
+  };
+  let currPos = [1, 1];
+  return input
+    .filter((it) => it !== "")
+    .map((ln) =>
+      ln.split("").reduce((ans, dir) => {
+        switch (dir) {
+          case "U":
+            if (getButton([currPos[0] - 1, currPos[1]])) {
+              currPos = [currPos[0] - 1, currPos[1]];
+            }
+            break;
+          case "D":
+            if (getButton([currPos[0] + 1, currPos[1]])) {
+              currPos = [currPos[0] + 1, currPos[1]];
+            }
+            break;
+          case "L":
+            if (getButton([currPos[0], currPos[1] - 1])) {
+              currPos = [currPos[0], currPos[1] - 1];
+            }
+            break;
+          case "R":
+            if (getButton([currPos[0], currPos[1] + 1])) {
+              currPos = [currPos[0], currPos[1] + 1];
+            }
+            break;
+          default:
+            break;
+        }
+        ans = getButton(currPos);
+        return ans;
+      }, "1")
+    )
+    .join("");
 }
 
 function soln(rawInput) {
-  const input = rawInput.split('\n');
-  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
+  const input = rawInput.split("\n");
+  fmtAnsWithRuntime(
+    () => partOne(input),
+    () => partTwo(input)
+  );
 }
 
 module.exports = { soln };
@@ -65,5 +148,26 @@ So, in this example, the bathroom code is 1985.
 Your puzzle input is the instructions from the document you found at the
 front desk. What is the bathroom code?
 
+--- Part Two ---
+You finally arrive at the bathroom (it's a several minute walk from the lobby 
+so visitors can behold the many fancy conference rooms and water coolers on 
+this floor) and go to punch in the code. Much to your bladder's dismay, the 
+keypad is not at all like you imagined it. Instead, you are confronted with 
+the result of hundreds of man-hours of bathroom-keypad-design meetings:
 
+    1
+  2 3 4
+5 6 7 8 9
+  A B C
+    D
+You still start at "5" and stop when you're at an edge, but given the same 
+instructions as above, the outcome is very different:
+
+You start at "5" and don't move at all (up and left are both edges), ending at 5.
+Continuing from "5", you move right twice and down three times (through "6", "7", "B", "D", "D"), ending at D.
+Then, from "D", you move five more times (through "D", "B", "C", "C", "B"), ending at B.
+Finally, after five more moves, you end at 3.
+So, given the actual keypad layout, the code would be 5DB3.
+
+Using the same instructions in your puzzle input, what is the correct bathroom code?
 */
