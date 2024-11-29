@@ -1,7 +1,7 @@
 module Y23.D01 where
 
-import Data.Time
-import Util (readInput, splitStr, printAnswerWithTime)
+import Data.Time ( diffUTCTime, getCurrentTime )
+import Util ( readInput, splitStr, printAnswerWithTime )
 
 isDigit :: Char -> Bool
 isDigit c = c >= '0' && c <= '9'
@@ -18,11 +18,20 @@ getNum str =
   where
     d = digits str ""
 
+partOne :: [String] -> Int
+partOne input = foldr (\s a -> a + s) 0 (map getNum input)
+
+partTwo :: [String] -> Int
+partTwo input = 0
+
 solve :: String -> IO ()
 solve input = do
-  start <- getCurrentTime
-  let inputSplit = map getNum (splitStr '\n' input)
-  let ans = foldr (\s a -> a + s) 0 inputSplit
-  stop <- getCurrentTime
-  let diff = (realToFrac (diffUTCTime stop start) :: Double) * 1000
-  printAnswerWithTime (show ans) diff
+  let inputList = splitStr '\n' input
+  startOne <- getCurrentTime
+  let ansOne = partOne inputList
+  endOne <- getCurrentTime
+  printAnswerWithTime (show ansOne) startOne endOne
+  startTwo <- getCurrentTime
+  let ansTwo = partTwo inputList
+  endTwo <- getCurrentTime
+  printAnswerWithTime (show ansTwo) startTwo endTwo
