@@ -9,5 +9,5 @@ $ cabal build
 ## Running
 
 ```bash
-$ cabal run haskell -- <year> <day>
+$ cabal run aoc-hs -- <year> <day>
 ```

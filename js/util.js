@@ -91,6 +91,29 @@ function rotateMatrixClockwise(matrix) {
 
 const sum = (arr) => arr.reduce((s, n) => s + n, 0);
 
+/** 
+ * Greatest common denominator of a and b
+ * 
+ * @param a {number}
+ * @param b {number}
+ */
+function gcd(a, b) {
+  while (b) {
+    [a, b] = [b, a % b];
+  }
+  return a;
+}
+
+/** 
+ * Least common multiple of a and b
+ * 
+ * @param a {number} 
+ * @param b {number}
+ */
+function lcm(a, b) {
+  return (a * b) / gcd(a, b);
+}
+
 module.exports = {
   coordsOf,
   fmtAnsWithRuntime,
@@ -99,5 +122,7 @@ module.exports = {
   rotateMatrixAntiClockwise,
   rotateMatrixClockwise,
   sum,
+  gcd,
+  lcm
 };
 
