@@ -22,7 +22,6 @@ readInput year day = readFile (fmtInputPath year day)
 
 ---- answer formatting ----
 
-
 fmtSolnStrPartOne :: String -> Double -> String
 fmtSolnStrPartOne = fmtSolnStr "Part 1"
 
