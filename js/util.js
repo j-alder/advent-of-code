@@ -1,6 +1,7 @@
 /**
  * Find the coordinates of a value in a 2d array. Returns undefined
  * if not found.
+ * 
  * @param {any} val value to check for
  * @param {any[][]} matrix 2 dimensional array to check
  * @returns {number[] | undefined} [x, y] coordinates of value
@@ -14,6 +15,12 @@ function coordsOf(val, matrix) {
   }
 }
 
+/**
+ * Execute a function and record its runtime.
+ * 
+ * @param {*} f The function to execute
+ * @returns {Array<string, number>} A tuple with the function result and the runtime
+ */
 function withRuntime(f) {
   const start = performance.now();
   return [f(), performance.now() - start];
@@ -21,6 +28,7 @@ function withRuntime(f) {
 
 /**
  * Format the output of two callbacks with their runtimes
+ * 
  * @param {function()} partOne 
  * @param {function()} partTwo 
  */
@@ -35,6 +43,7 @@ function fmtAnsWithRuntime(partOne, partTwo) {
 
 /**
  * Return all neighbors of a given coordinate in a matrix
+ * 
  * @param {Number} x index of outer array
  * @param {Number} y index of inner array
  * @param {any[][]} matrix 2d array
@@ -57,6 +66,7 @@ const isPalindrome = (str) =>
 
 /**
  * Rotate a 2d array 90 degrees anti-clockwise
+ * 
  * @param {any[][]} matrix 
  * @returns {any[][]}
  */
@@ -74,6 +84,7 @@ function rotateMatrixAntiClockwise(matrix) {
 
 /**
  * Rotate a 2d array 90 degrees clockwise
+ * 
  * @param {any[][]} matrix 
  * @returns {any[][]}
  */
@@ -94,8 +105,8 @@ const sum = (arr) => arr.reduce((s, n) => s + n, 0);
 /** 
  * Greatest common denominator of a and b
  * 
- * @param a {number}
- * @param b {number}
+ * @param {number} a
+ * @param {number} b
  */
 function gcd(a, b) {
   while (b) {
@@ -107,11 +118,28 @@ function gcd(a, b) {
 /** 
  * Least common multiple of a and b
  * 
- * @param a {number} 
- * @param b {number}
+ * @param {number} a
+ * @param {number} b
  */
 function lcm(a, b) {
   return (a * b) / gcd(a, b);
+}
+
+/**
+ * A map of elements in an array to the number of times they 
+ * occur within it.
+ * 
+ * @param {Array<number | string>} arr 
+ */
+function occurrances(arr) {
+  return arr.reduce((acc, elem) => {
+    if (acc[elem] != null) {
+      acc[elem] = acc[elem] + 1
+    } else {
+      acc[elem] = 1
+    }
+    return acc;
+  }, {})
 }
 
 module.exports = {
@@ -123,6 +151,8 @@ module.exports = {
   rotateMatrixClockwise,
   sum,
   gcd,
-  lcm
+  lcm,
+  diff,
+  occurrances
 };
 
