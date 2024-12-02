@@ -152,7 +152,6 @@ module.exports = {
   sum,
   gcd,
   lcm,
-  diff,
   occurrances
 };
 
