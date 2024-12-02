@@ -1,4 +1,4 @@
-const { fmtAnsWithRuntime, sum, between } = require("../util.js");
+const { fmtAnsWithRuntime, between } = require("../util.js");
 
 const validDiffs = (diffs)=> 
   diffs[0] < 0
