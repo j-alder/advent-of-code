@@ -1,7 +1,7 @@
 module Y23.D01 where
 
 import Data.Time ( diffUTCTime, getCurrentTime )
-import Util ( readInput, splitStr, printAnswerOneWithTime, printAnswerTwoWithTime )
+import Util ( readInput, splitByChar, printAnswerOneWithTime, printAnswerTwoWithTime )
 
 isDigit :: Char -> Bool
 isDigit c = c >= '0' && c <= '9'
@@ -32,7 +32,7 @@ partTwo input = 0
 
 solve :: String -> IO ()
 solve input = do
-  let inputList = splitStr '\n' input
+  let inputList = splitByChar '\n' input
   startOne <- getCurrentTime
   let ansOne = partOne inputList
   endOne <- getCurrentTime

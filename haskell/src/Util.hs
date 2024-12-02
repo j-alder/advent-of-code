@@ -1,6 +1,9 @@
 module Util where
 
-import Data.Time
+import Data.Text (Text)
+import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
+import Data.Time (diffUTCTime, getCurrentTime, UTCTime)
 
 ---- setup utils ----
 
@@ -17,39 +20,45 @@ fmtInputPath year day =
     "../input/y" ++ year ++ "/d" ++ fmtDay day ++ ".txt"
 
 -- | Read the input string for a given year and day.
-readInput :: String -> String -> IO String
-readInput year day = readFile (fmtInputPath year day)
+readInput :: String -> String -> IO Text
+readInput year day = TIO.readFile (fmtInputPath year day)
 
 ---- answer formatting ----
 
-fmtSolnStrPartOne :: String -> Double -> String
-fmtSolnStrPartOne = fmtSolnStr "Part 1"
-
-fmtSolnStrPartTwo :: String -> Double -> String
-fmtSolnStrPartTwo = fmtSolnStr "Part 2"
-
 -- | Format a solution string for a given part, answer, and execution time.
-fmtSolnStr :: String -> String -> Double -> String
-fmtSolnStr part ans diff = part ++ ": " ++ ans ++ "\ntook: " ++ show diff ++ "ms"
+
+fmtSoln :: String -> Text -> Double -> String
+fmtSoln part ans diff = part ++ ": " ++ show ans ++ "\ntook: " ++ show diff ++ "ms"
 
 diffInMillis :: UTCTime -> UTCTime -> Double
 diffInMillis start end = (realToFrac (diffUTCTime end start) :: Double) * 1000
 
-printAnswerOneWithTime :: String -> UTCTime -> UTCTime -> IO ()
-printAnswerOneWithTime ans startTime endTime = 
-  putStrLn (fmtSolnStrPartOne ans (diffInMillis startTime endTime))
+printAnswersWithTime :: (Text, UTCTime, UTCTime) -> (Text, UTCTime, UTCTime) -> IO ()
+printAnswersWithTime ans1 ans2 = do
+  putStrLn (fmtSoln "Part 1" (extractFirst ans1) (diffInMillis (extractSecond ans1) (extractThird ans1)))
+  putStrLn (fmtSoln "Part 2" (extractFirst ans2) (diffInMillis (extractSecond ans2) (extractThird ans2)))
 
-printAnswerTwoWithTime :: String -> UTCTime -> UTCTime -> IO ()
-printAnswerTwoWithTime ans startTime endTime = 
-  putStrLn (fmtSolnStrPartTwo ans (diffInMillis startTime endTime))
+fmtSolnWithRuntime :: (Text -> Text) -> (Text-> Text) -> IO ()
+fmtSolnWithRuntime partOne partTwo = do
+  startTime1 <- getCurrentTime
+  let ans1 = partOne
+  endTime1 <- getCurrentTime
+  startTime2 <- getCurrentTime
+  let ans2 = partTwo
+  endTime2 <- getCurrentTime
+  printAnswersWithTime (ans1, startTime1, endTime1) (ans2, startTime2, endTime2)
 
 ---- solution utils ----
 
+extractFirst :: (a, b, c) -> a
+extractFirst (a, _, _) = a
+
+extractSecond :: (a, b, c) -> b
+extractSecond (_, b, _) = b
+
+extractThird :: (a, b, c) -> c
+extractThird (_, _, c) = c
+
 -- | Split a string into a list of strings, separated by the given character.
-splitStr :: Char -> String -> [String]
-splitStr c str = if null n'' then [n']
-    else n' : splitStr c (tail n'')
-    where
-        n = span (/= c) str
-        n' = fst n
-        n'' = snd n
+splitByChar :: Char -> Text -> [Text]
+splitByChar c = T.splitOn (T.singleton c)

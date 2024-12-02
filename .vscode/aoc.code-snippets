@@ -64,11 +64,11 @@
 		"prefix": "hsbp",
 		"body": [
 			"module $1.$2 where",
-			"import Util (splitStr)",
+			"import Util (splitByChar)",
 			"",
 			"soln :: String -> (String, String)",
 			"soln input = do",
-			"  let input' = splitStr '\\n' input",
+			"  let input' = splitByChar '\\n' input",
 			"  (\"incomplete\", \"incomplete\")",
 			"",
 			"{-",
