@@ -1,33 +1,53 @@
-const { fmtAnsWithRuntime } = require('../util.js');
+const { fmtAnsWithRuntime, sum, between } = require("../util.js");
+
+const validDiffs = (diffs)=> 
+  diffs[0] < 0
+    ? diffs.every((diff) => diff < 0 && between(diff, -4, 0))
+    : diffs.every((diff) => diff > 0 && between(diff, 0, 4));
+
+const genDiffs = (report, skipIndex = -1) =>
+  report
+    .filter((_, idx) => idx !== skipIndex)
+    .reduce((diffs, val, idx, filteredReport) => {
+      if (idx >= filteredReport.length - 1) return diffs;
+      return [...diffs, filteredReport[idx + 1] - val];
+    }, []);
+
+function isSafe(report, skipIndex = -1) {
+  const diffs = genDiffs(report, skipIndex);
+  if (!validDiffs(diffs)) return false;
+  return true;
+}
 
 function partOne(input) {
-  return input.reduce((acc, rawReport) => {
-    const report = rawReport.split(" ").map(Number);
-    let prevDiff = 0;
-    for (let i = 0; i < report.length - 1; i++) {
-      const diff = report[i] - report[i + 1];
-      if (diff == 0) {
-        return acc;
-      }
-      if (diff > 0 && prevDiff < 0 || diff < 0 && prevDiff > 0) {
-        return acc;
-      }
-      if (Math.abs(diff) > 3) {
-        return acc;
-      }
-      prevDiff = diff;
-    }
-    return acc + 1;
+  return input.reduce((acc, report) => {
+    if (isSafe(report)) return acc + 1;
+    return acc;
   }, 0);
 }
 
 function partTwo(input) {
-
+  return input.reduce((acc, report) => {
+    let safe = false;
+    if (isSafe(report)) safe = true;
+    let i = 0;
+    while (!safe && i < report.length) {
+      safe = isSafe(report, i);
+      i++;
+    }
+    if (safe) return acc + 1;
+    return acc;
+  }, 0);
 }
 
 function soln(rawInput) {
-  const input = rawInput.split('\n');
-  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
+  const input = rawInput
+    .split("\n")
+    .map((rawReport) => rawReport.split(" ").map(Number));
+  fmtAnsWithRuntime(
+    () => partOne(input),
+    () => partTwo(input)
+  );
 }
 
 module.exports = { soln };

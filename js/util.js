@@ -142,6 +142,20 @@ function occurrances(arr) {
   }, {})
 }
 
+/**
+ * Determine whether a number is between two other numbers,
+ * non-inclusive.
+ * 
+ * e.g. between(5, 0, 5) = false
+ * e.g. between(1, 1, 3) = false
+ * e.g. between(1, 0, 3) = true
+ * 
+ * @param {number} n The number to check
+ * @param {number} a Non-inclusive start of range
+ * @param {number} b Non-inclusive end of range
+ */
+const between = (n, a, b) => n > a && n < b;
+
 module.exports = {
   coordsOf,
   fmtAnsWithRuntime,
@@ -152,6 +166,6 @@ module.exports = {
   sum,
   gcd,
   lcm,
-  occurrances
+  occurrances,
+  between
 };
-
