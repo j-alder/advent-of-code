@@ -2,6 +2,12 @@ const { fmtAnsWithRuntime } = require('../util.js');
 
 const numRegex = /\d+/g;
 
+const partOne = (input) =>
+  [...input.matchAll(/mul\((\d+),(\d+)\)/g)]
+    .reduce((acc, mul) => acc + mul[1] * mul[2], 0);
+
+/* more readable, slightly less performant
+
 function partOne(input) {
   const mulRegex = /mul\(\d+,\d+\)/g;
   return input.match(mulRegex).reduce((acc, mul) => {
@@ -9,6 +15,8 @@ function partOne(input) {
     return acc + a * b;
   }, 0);
 }
+
+*/
 
 function partTwo(input) {
   const enabledMulRegex = /(do\(\))|(don't\(\))|(mul\(\d+,\d+\))/g;
