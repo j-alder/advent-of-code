@@ -1,22 +1,18 @@
 const { fmtAnsWithRuntime } = require('../util.js');
 
-const numRegex = /\d+/g;
-
 function partOne(input) {
   const mulRegex = /mul\(\d+,\d+\)/g;
   return input.match(mulRegex).reduce((acc, mul) => {
-    const [a, b] = mul.match(numRegex).map(Number);
+    const [a, b] = mul.match(/\d+/g).map(Number);
     return acc + a * b;
   }, 0);
 }
 
-/* less readable, (very) slightly more performant
-
-const partOne = (input) =>
+// less readable, (very) slightly more performant
+// use capturing groups to get operands without using a second match
+const partOneOpt = (input) =>
   [...input.matchAll(/mul\((\d+),(\d+)\)/g)]
     .reduce((acc, mul) => acc + mul[1] * mul[2], 0);
-
-*/
 
 function partTwo(input) {
   const enabledMulRegex = /(do\(\))|(don't\(\))|(mul\(\d+,\d+\))/g;
@@ -29,16 +25,16 @@ function partTwo(input) {
       enabled = false;
     }
     if (enabled && inst.startsWith("mul")) {
-      const [a, b] = inst.match(numRegex).map(Number);
+      const [a, b] = inst.match(/\d+/g).map(Number);
       return acc + a * b;
     }
     return acc;
   }, 0);
 }
 
-/* more readable, (very) slightly more performant
-
-const partTwo = (input) =>
+// less readable, (very) slightly more performant
+// use capturing groups to get operations and operands without using sequential matches
+const partTwoOpt = (input) =>
   [...input.matchAll(/(?:do\(\))|(?:don't\(\))|(?:mul\((\d+),(\d+)\))/g)]
     .reduce((acc, inst) => {
       if (inst[0] == "do()") {
@@ -53,12 +49,10 @@ const partTwo = (input) =>
       return acc;
     }, [0, true])[0]
 
-*/ 
-
 function soln(rawInput) {
   fmtAnsWithRuntime(
-    () => partOne(rawInput),
-    () => partTwo(rawInput)
+    () => partOneOpt(rawInput),
+    () => partTwoOpt(rawInput)
   );
 }
 
