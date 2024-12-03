@@ -2,12 +2,6 @@ const { fmtAnsWithRuntime } = require('../util.js');
 
 const numRegex = /\d+/g;
 
-const partOne = (input) =>
-  [...input.matchAll(/mul\((\d+),(\d+)\)/g)]
-    .reduce((acc, mul) => acc + mul[1] * mul[2], 0);
-
-/* more readable, slightly less performant
-
 function partOne(input) {
   const mulRegex = /mul\(\d+,\d+\)/g;
   return input.match(mulRegex).reduce((acc, mul) => {
@@ -16,25 +10,50 @@ function partOne(input) {
   }, 0);
 }
 
+/* less readable, (very) slightly more performant
+
+const partOne = (input) =>
+  [...input.matchAll(/mul\((\d+),(\d+)\)/g)]
+    .reduce((acc, mul) => acc + mul[1] * mul[2], 0);
+
 */
 
 function partTwo(input) {
   const enabledMulRegex = /(do\(\))|(don't\(\))|(mul\(\d+,\d+\))/g;
   let enabled = true;
   return input.match(enabledMulRegex).reduce((acc, inst) => {
-    if (enabled && inst.startsWith("mul")) {
-      const [a, b] = inst.match(numRegex).map(Number);
-      return acc + a * b;
-    }
     if (inst == "do()") {
       enabled = true;
     }
     if (inst == "don't()") {
       enabled = false;
     }
+    if (enabled && inst.startsWith("mul")) {
+      const [a, b] = inst.match(numRegex).map(Number);
+      return acc + a * b;
+    }
     return acc;
   }, 0);
 }
+
+/* more readable, (very) slightly more performant
+
+const partTwo = (input) =>
+  [...input.matchAll(/(?:do\(\))|(?:don't\(\))|(?:mul\((\d+),(\d+)\))/g)]
+    .reduce((acc, inst) => {
+      if (inst[0] == "do()") {
+        return [acc[0], true];
+      }
+      if (inst[0] == "don't()") {
+        return [acc[0], false];
+      }
+      if (acc[1]) {
+        return [acc[0] + Number(inst[1]) * Number(inst[2]), acc[1]];
+      }
+      return acc;
+    }, [0, true])[0]
+
+*/ 
 
 function soln(rawInput) {
   fmtAnsWithRuntime(
