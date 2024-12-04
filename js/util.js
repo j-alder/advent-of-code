@@ -42,14 +42,17 @@ function fmtAnsWithRuntime(partOne, partTwo) {
 }
 
 /**
- * Return all neighbors of a given coordinate in a matrix
+ * Return all neighbors of a given coordinate in a matrix, along with their coordinates within
+ * the matrix.
  * 
  * @param {Number} x index of outer array
  * @param {Number} y index of inner array
  * @param {any[][]} matrix 2d array
- * @returns {Object.<string, any[] | undefined>} An object with each neighbor as a key and its coordinates as a value
+ * @returns {Object.<string, [any, number, number] | undefined>} An object whose keys are cardinal 
+ * directions surrounding element at x, y and values are triples containing the element at that 
+ * direction, its x value, and its y value
  */
-const getNeighbors = (x, y, matrix) =>
+const getNeighborsWithCoordinates = (x, y, matrix) =>
   ({
     nw: matrix[x - 1] && [matrix[x - 1][y - 1], x - 1, y - 1],
     n: matrix[x - 1] && [matrix[x - 1][y], x - 1, y],
@@ -60,6 +63,32 @@ const getNeighbors = (x, y, matrix) =>
     s: matrix[x + 1] && [matrix[x + 1][y], x + 1, y],
     se: matrix[x + 1] && [matrix[x + 1][y + 1], x + 1, y + 1],
   });
+
+const defaultDirections = {
+  nw: [-1, -1],
+  n: [-1, 0],
+  ne: [-1, 1],
+  e: [0, -1],
+  w: [0, 1],
+  sw: [1, -1],
+  s: [1, 0],
+  se: [1, 1]
+};
+
+/**
+ * Get all neighbors of a specific element in a matrix at coordinates x and y.
+ * 
+ * @param {Number} x index of outer array
+ * @param {Number} y index of inner array
+ * @param {Object<string, [Number, Number]> | undefined} directions A map of direction names to how
+ * far away they are on the coordinate axis
+*/
+const getNeighbors = (x, y, matrix, directions = defaultDirections) =>
+  Object.fromEntries(
+    Object.entries(directions).map(([k, dir]) => (
+      [k, matrix[x + dir[0]]?.[y + dir[1]]]
+    )));
+
 
 const isPalindrome = (str) =>
   str === str.split('').reverse().join('');
@@ -159,6 +188,7 @@ const between = (n, a, b) => n > a && n < b;
 module.exports = {
   coordsOf,
   fmtAnsWithRuntime,
+  getNeighborsWithCoordinates,
   getNeighbors,
   isPalindrome,
   rotateMatrixAntiClockwise,

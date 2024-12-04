@@ -1,4 +1,4 @@
-const { fmtAnsWithRuntime, getNeighbors, coordsOf } = require('../util.js');
+const { fmtAnsWithRuntime, getNeighborsWithCoordinates, coordsOf } = require('../util.js');
 
 class Node {
   constructor(x, y, type) {
@@ -68,7 +68,7 @@ function isValidPipe(targetPipe, currPipe, dir, targetX, targetY, path) {
 }
 
 const getValidPipe = (node, matrix, path) => 
-  Object.entries(getNeighbors(node.x, node.y, matrix))
+  Object.entries(getNeighborsWithCoordinates(node.x, node.y, matrix))
     .filter(([k, _]) => k === 'n' || k === 's' || k === 'e' || k === 'w')
     .find(([dir, val]) => isValidPipe(val[0], node.type, dir, val[1], val[2], path));
 
