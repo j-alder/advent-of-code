@@ -1,4 +1,4 @@
-const { fmtAnsWithRuntime } = require("../util.js");
+const { fmtAnsWithRuntime, getNeighbors } = require("../util.js");
 
 function partOne(input) {
   return input.reduce((count, line, lineIdx, lines) => {
@@ -82,43 +82,49 @@ function partTwo(input) {
     let localCount = 0;
     for (let charIdx = 0; charIdx < line.length; charIdx++) {
       if (line[charIdx] == "A") {
+        const neighbors = getNeighbors(lineIdx, charIdx, lines, {
+          nw: [-1, -1],
+          ne: [-1, 1],
+          sw: [1, -1],
+          se: [1, 1],
+        });
         if (
           /*
         M S
          A
         M S
         */
-          (lines[lineIdx - 1]?.[charIdx - 1] == "M" &&
-            lines[lineIdx - 1]?.[charIdx + 1] == "S" &&
-            lines[lineIdx + 1]?.[charIdx - 1] == "M" &&
-            lines[lineIdx + 1]?.[charIdx + 1] == "S") ||
+          (neighbors.nw == "M" &&
+            neighbors.ne == "S" &&
+            neighbors.sw == "M" &&
+            neighbors.se == "S") ||
           /*
         M M
          A
         S S
         */
-          (lines[lineIdx - 1]?.[charIdx - 1] == "M" &&
-            lines[lineIdx - 1]?.[charIdx + 1] == "M" &&
-            lines[lineIdx + 1]?.[charIdx - 1] == "S" &&
-            lines[lineIdx + 1]?.[charIdx + 1] == "S") ||
+          (neighbors.nw == "M" &&
+            neighbors.ne == "M" &&
+            neighbors.sw == "S" &&
+            neighbors.se == "S") ||
           /*
         S M
          A
         S M
         */
-          (lines[lineIdx - 1]?.[charIdx - 1] == "S" &&
-            lines[lineIdx - 1]?.[charIdx + 1] == "M" &&
-            lines[lineIdx + 1]?.[charIdx - 1] == "S" &&
-            lines[lineIdx + 1]?.[charIdx + 1] == "M") ||
+          (neighbors.nw == "S" &&
+            neighbors.ne == "M" &&
+            neighbors.sw == "S" &&
+            neighbors.se == "M") ||
           /*
         S S
          A
         M M
         */
-          (lines[lineIdx - 1]?.[charIdx - 1] == "S" &&
-            lines[lineIdx - 1]?.[charIdx + 1] == "S" &&
-            lines[lineIdx + 1]?.[charIdx - 1] == "M" &&
-            lines[lineIdx + 1]?.[charIdx + 1] == "M")
+          (neighbors.nw == "S" &&
+            neighbors.ne == "S" &&
+            neighbors.sw == "M" &&
+            neighbors.se == "M")
         ) {
           localCount++;
         }
