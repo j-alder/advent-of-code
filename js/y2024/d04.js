@@ -1,130 +1,139 @@
-const { fmtAnsWithRuntime } = require('../util.js');
+const { fmtAnsWithRuntime } = require("../util.js");
 
 function partOne(input) {
-  // find lateral spellings - 'XMAS' 'SAMX'
-  // find horizontal spellings
-  // find vertical spellings
-  // find left diagonal spellings
-  // find right diagonal spellings
-
   return input.reduce((count, line, lineIdx, lines) => {
     let localCount = 0;
     for (let charIdx = 0; charIdx < line.length; charIdx++) {
-      if (line[charIdx] == 'X') {
-        // horiz
-        if (line[charIdx + 1] == 'M' && line[charIdx + 2] == 'A' && line[charIdx + 3] == 'S') {
-          // console.log(lineIdx, charIdx);
+      if (line[charIdx] == "X") {
+        // horizontal XMAS
+        if (
+          line[charIdx + 1] == "M" &&
+          line[charIdx + 2] == "A" &&
+          line[charIdx + 3] == "S"
+        ) {
           localCount++;
         }
-        // vert
-        if (lines[lineIdx + 1]?.[charIdx] == 'M' && lines[lineIdx + 2]?.[charIdx] == 'A' && lines[lineIdx + 3]?.[charIdx] == 'S') {
-          // console.log(lineIdx, charIdx);
+        // vertical XMAS
+        if (
+          lines[lineIdx + 1]?.[charIdx] == "M" &&
+          lines[lineIdx + 2]?.[charIdx] == "A" &&
+          lines[lineIdx + 3]?.[charIdx] == "S"
+        ) {
           localCount++;
         }
-        // diag
-        if (lines[lineIdx + 1]?.[charIdx + 1] == 'M' && lines[lineIdx + 2]?.[charIdx + 2] == 'A' && lines[lineIdx + 3]?.[charIdx + 3] == 'S') {
-          // console.log(lineIdx, charIdx);
+        // right diagonal XMAS
+        if (
+          lines[lineIdx + 1]?.[charIdx + 1] == "M" &&
+          lines[lineIdx + 2]?.[charIdx + 2] == "A" &&
+          lines[lineIdx + 3]?.[charIdx + 3] == "S"
+        ) {
           localCount++;
         }
-        // diag
-        if (lines[lineIdx + 1]?.[charIdx - 1] == 'M' && lines[lineIdx + 2]?.[charIdx - 2] == 'A' && lines[lineIdx + 3]?.[charIdx - 3] == 'S') {
-          // console.log(lineIdx, charIdx);
+        // left diagonal XMAS
+        if (
+          lines[lineIdx + 1]?.[charIdx - 1] == "M" &&
+          lines[lineIdx + 2]?.[charIdx - 2] == "A" &&
+          lines[lineIdx + 3]?.[charIdx - 3] == "S"
+        ) {
           localCount++;
         }
-      } 
-      if (line[charIdx] == 'S') {
-        // horiz
-        if (line[charIdx + 1] == 'A' && line[charIdx + 2] == 'M' && line[charIdx + 3] == 'X') {
-          // console.log(lineIdx, charIdx);
+      }
+      if (line[charIdx] == "S") {
+        // horizontal SAMX
+        if (
+          line[charIdx + 1] == "A" &&
+          line[charIdx + 2] == "M" &&
+          line[charIdx + 3] == "X"
+        ) {
           localCount++;
         }
-        // vert
-        if (lines[lineIdx + 1]?.[charIdx] == 'A' && lines[lineIdx + 2]?.[charIdx] == 'M' && lines[lineIdx + 3]?.[charIdx] == 'X') {
-          // console.log(lineIdx, charIdx);
+        // vertical SAMX
+        if (
+          lines[lineIdx + 1]?.[charIdx] == "A" &&
+          lines[lineIdx + 2]?.[charIdx] == "M" &&
+          lines[lineIdx + 3]?.[charIdx] == "X"
+        ) {
           localCount++;
         }
-        // diag
-        if (lines[lineIdx + 1]?.[charIdx + 1] == 'A' && lines[lineIdx + 2]?.[charIdx + 2] == 'M' && lines[lineIdx + 3]?.[charIdx + 3] == 'X') {
-          // console.log(lineIdx, charIdx);
+        // right diagonal SAMX
+        if (
+          lines[lineIdx + 1]?.[charIdx + 1] == "A" &&
+          lines[lineIdx + 2]?.[charIdx + 2] == "M" &&
+          lines[lineIdx + 3]?.[charIdx + 3] == "X"
+        ) {
           localCount++;
         }
-        if (lines[lineIdx + 1]?.[charIdx - 1] == 'A' && lines[lineIdx + 2]?.[charIdx - 2] == 'M' && lines[lineIdx + 3]?.[charIdx - 3] == 'X') {
-          // console.log(lineIdx, charIdx);
+        // left diagonal SAMX
+        if (
+          lines[lineIdx + 1]?.[charIdx - 1] == "A" &&
+          lines[lineIdx + 2]?.[charIdx - 2] == "M" &&
+          lines[lineIdx + 3]?.[charIdx - 3] == "X"
+        ) {
           localCount++;
         }
       }
     }
     return count + localCount;
   }, 0);
-  /*
-  keep "visited" map
-  for each line:
-    for each letter:
-      if 'X':
-        if next e/s/se == 'M' ...
-      if 'S':
-        if next e/s/se == 'A' ...
-  */
 }
 
 function partTwo(input) {
   return input.reduce((count, line, lineIdx, lines) => {
     let localCount = 0;
     for (let charIdx = 0; charIdx < line.length; charIdx++) {
-      if (line[charIdx] == 'A') {
-        /*
+      if (line[charIdx] == "A") {
+        if (
+          /*
         M S
          A
         M S
         */
-        if (
-          lines[lineIdx - 1]?.[charIdx - 1] == 'M' && lines[lineIdx - 1]?.[charIdx + 1] == 'S' && 
-          lines[lineIdx + 1]?.[charIdx - 1] == 'M' && lines[lineIdx + 1]?.[charIdx + 1] == 'S') {
-          // console.log(lineIdx, charIdx);
-          localCount++;
-        }
-        /*
+          (lines[lineIdx - 1]?.[charIdx - 1] == "M" &&
+            lines[lineIdx - 1]?.[charIdx + 1] == "S" &&
+            lines[lineIdx + 1]?.[charIdx - 1] == "M" &&
+            lines[lineIdx + 1]?.[charIdx + 1] == "S") ||
+          /*
         M M
          A
         S S
         */
-        if (
-          lines[lineIdx - 1]?.[charIdx - 1] == 'M' && lines[lineIdx - 1]?.[charIdx + 1] == 'M' && 
-          lines[lineIdx + 1]?.[charIdx - 1] == 'S' && lines[lineIdx + 1]?.[charIdx + 1] == 'S') {
-          // console.log(lineIdx, charIdx);
-          localCount++;
-        }
-        /*
+          (lines[lineIdx - 1]?.[charIdx - 1] == "M" &&
+            lines[lineIdx - 1]?.[charIdx + 1] == "M" &&
+            lines[lineIdx + 1]?.[charIdx - 1] == "S" &&
+            lines[lineIdx + 1]?.[charIdx + 1] == "S") ||
+          /*
         S M
          A
         S M
         */
-        if (
-          lines[lineIdx - 1]?.[charIdx - 1] == 'S' && lines[lineIdx - 1]?.[charIdx + 1] == 'M' && 
-          lines[lineIdx + 1]?.[charIdx - 1] == 'S' && lines[lineIdx + 1]?.[charIdx + 1] == 'M') {
-          // console.log(lineIdx, charIdx);
-          localCount++;
-        }
-        /*
+          (lines[lineIdx - 1]?.[charIdx - 1] == "S" &&
+            lines[lineIdx - 1]?.[charIdx + 1] == "M" &&
+            lines[lineIdx + 1]?.[charIdx - 1] == "S" &&
+            lines[lineIdx + 1]?.[charIdx + 1] == "M") ||
+          /*
         S S
          A
         M M
         */
-        if (
-          lines[lineIdx - 1]?.[charIdx - 1] == 'S' && lines[lineIdx - 1]?.[charIdx + 1] == 'S' && 
-          lines[lineIdx + 1]?.[charIdx - 1] == 'M' && lines[lineIdx + 1]?.[charIdx + 1] == 'M') {
-          // console.log(lineIdx, charIdx);
+          (lines[lineIdx - 1]?.[charIdx - 1] == "S" &&
+            lines[lineIdx - 1]?.[charIdx + 1] == "S" &&
+            lines[lineIdx + 1]?.[charIdx - 1] == "M" &&
+            lines[lineIdx + 1]?.[charIdx + 1] == "M")
+        ) {
           localCount++;
         }
-      } 
+      }
     }
     return count + localCount;
   }, 0);
 }
 
 function soln(rawInput) {
-  const input = rawInput.split('\n').map(ln => ln.split(''));
-  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
+  const input = rawInput.split("\n").map((ln) => ln.split(""));
+  fmtAnsWithRuntime(
+    () => partOne(input),
+    () => partTwo(input)
+  );
 }
 
 module.exports = { soln };
