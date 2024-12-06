@@ -29,14 +29,10 @@ function move([dir, pos], grid) {
   }
 }
 
-const visitedStrFrom = ([dir, coords]) => `${dir}|${coords[0]},${coords[1]}`;
-
 function traverseFrom([dir, coords], grid) {
   let curr = [dir, Array.from(coords)];
-  const height = grid.length;
-  const width = grid[0].length;
   const path = [];
-  while (curr[1][0] < height && curr[1][1] < width) {
+  while (gridValue(grid, curr[1][0], curr[1][1]) != null) {
     path.push(curr);
     curr = move(curr, grid);
   }
@@ -46,63 +42,44 @@ function traverseFrom([dir, coords], grid) {
 function partOne(grid) {
   let curr = ["N", coordsOf("^", grid)];
   const path = traverseFrom(curr, grid);
-  const visited = new Set();
-  path.forEach(([_, coords]) => visited.add(`${coords[0]},${coords[1]}`));
-  return visited.size;
+  return new Set(path.map(([_, coords]) => `${coords[0]},${coords[1]}`)).size;
 }
 
-function isLoop([dir, coords], grid) {
+const visitedStrFrom = ([dir, coords]) => `${dir}|${coords[0]},${coords[1]}`;
+
+function producesLoop([dir, coords], mutatedGrid) {
   let curr = [dir, Array.from(coords)];
   const visited = new Set();
-  while (gridValue(grid, curr[1][0], curr[1][1]) != null) {
+  while (gridValue(mutatedGrid, curr[1][0], curr[1][1]) != null) {
     if (visited.has(visitedStrFrom(curr))) {
       return true;
     }
     visited.add(visitedStrFrom(curr));
-    curr = move(curr, grid);
+    curr = move(curr, mutatedGrid);
   }
   return false;
 }
 
-function getObstacleLocation([currDir, currCoords]) {
-  switch (currDir) {
-    case "N":
-      return [currCoords[0] - 1, currCoords[1]];
-    case "S":
-      return [currCoords[0] + 1, currCoords[1]];
-    case "E":
-      return [currCoords[0], currCoords[1] - 1];
-    case "W":
-      return [currCoords[0], currCoords[1] + 1];
-  }
-}
-
-function createNewGridWithObstacleAt([x, y], grid) {
-  const newGrid = [...grid.map(it => it.map(it_ => it_))];
-  newGrid[x][y] = "#";
-  return newGrid;
-}
-
-function findLoopOpportunities(path, grid, count) {
-  if (path.length < 2) {
-    return 0;
-  }
-  // if the last position in the path is not a turn, insert an O
-  if (path[path.length-1][0] !== path[path.length-2][0]) {
-    return 0 + findLoopOpportunities(path.slice(0, path.length-1), grid, count);
-  }
-  const mutatedGrid = createNewGridWithObstacleAt(getObstacleLocation(path[path.length-1]), grid);
-  if (isLoop(path[0], mutatedGrid)) {
-    return 1 + findLoopOpportunities(path.slice(0, path.length-1), grid, count);
-  } else {
-    return 0 + findLoopOpportunities(path.slice(0, path.length-1), grid, count);
-  }
-}
-
 function partTwo(grid) {
-  let curr = ["N", coordsOf("^", grid)];
-  const originalPath = traverseFrom(curr, grid);
-  return findLoopOpportunities(originalPath.splice(0, originalPath.length - 1), grid, 0);
+  let startingPos = ["N", coordsOf("^", grid)];
+  const path = traverseFrom(startingPos, grid);
+  const uniqueNodes = [
+    ...new Set(path.map(([_, coords]) => `${coords[0]},${coords[1]}`)),
+  ].map((nodeStr) => nodeStr.split(",").map(Number));
+  return uniqueNodes
+    .splice(2, uniqueNodes.length)
+    .reduce((count, [x, y]) => {
+      if (grid[x][y] === ".") {
+        let n = 0;
+        grid[x][y] = "#";
+        if (producesLoop(startingPos, grid)) {
+          n = 1;
+        }
+        grid[x][y] = ".";
+        return count + n;
+      }
+      return count;
+    }, 0);
 }
 
 function soln(rawInput) {
