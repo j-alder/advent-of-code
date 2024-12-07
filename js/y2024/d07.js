@@ -9,8 +9,8 @@ function permutations(permutationLength, alphabet) {
       return;
     }
 
-    for (const op of alphabet) {
-      generate(current + op);
+    for (const a of alphabet) {
+      generate(current + a);
     }
   }
 
