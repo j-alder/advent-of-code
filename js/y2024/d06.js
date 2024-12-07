@@ -2,84 +2,80 @@ const { fmtAnsWithRuntime, coordsOf } = require("../util.js");
 
 const gridValue = (grid, x, y) => grid[x]?.[y];
 
-function move([dir, pos], grid) {
-  switch (dir) {
-    case "N":
-      if (gridValue(grid, pos[0] - 1, pos[1]) == "#") {
-        return ["E", [pos[0], pos[1] + 1]];
-      }
-      return [dir, [pos[0] - 1, pos[1]]];
-    case "S":
-      if (gridValue(grid, pos[0] + 1, pos[1]) == "#") {
-        return ["W", [pos[0], pos[1] - 1]];
-      }
-      return [dir, [pos[0] + 1, pos[1]]];
-    case "E":
-      if (gridValue(grid, pos[0], pos[1] + 1) == "#") {
-        return ["S", [pos[0] + 1, pos[1]]];
-      }
-      return [dir, [pos[0], pos[1] + 1]];
-    case "W":
-      if (gridValue(grid, pos[0], pos[1] - 1) == "#") {
-        return ["N", [pos[0] - 1, pos[1]]];
-      }
-      return [dir, [pos[0], pos[1] - 1]];
-    default:
-      return [dir, pos];
-  }
-}
+const dirs = [
+  [-1, 0],
+  [0, 1],
+  [1, 0],
+  [0, -1],
+];
 
-function traverseFrom([dir, coords], grid) {
-  let curr = [dir, Array.from(coords)];
+const mutCur = (curr, dir) => [curr[0] + dirs[dir][0], curr[1] + dirs[dir][1]];
+
+function traverse([startX, startY], grid) {
+  let dir = 0;
+  let curr = [startX, startY];
   const path = [];
-  while (gridValue(grid, curr[1][0], curr[1][1]) != null) {
+  while (gridValue(grid, curr[0], curr[1]) != null) {
     path.push(curr);
-    curr = move(curr, grid);
+    const [x, y] = mutCur(curr, dir);
+    if (gridValue(grid, x, y) == "#") {
+      dir++;
+      dir %= 4;
+    } else {
+      curr = [x, y];
+    }
   }
   return path;
 }
 
 function partOne(grid) {
-  let curr = ["N", coordsOf("^", grid)];
-  const path = traverseFrom(curr, grid);
-  return new Set(path.map(([_, coords]) => `${coords[0]},${coords[1]}`)).size;
+  let start = coordsOf("^", grid);
+  const path = traverse(start, grid);
+  return new Set(path.map(([x, y]) => `${x},${y}`)).size;
 }
 
-const visitedStrFrom = ([dir, coords]) => `${dir}|${coords[0]},${coords[1]}`;
-
-function producesLoop([dir, coords], mutatedGrid) {
-  let curr = [dir, Array.from(coords)];
+function producesLoop([startX, startY], grid) {
+  let dir = 0;
+  let curr = [startX, startY];
   const visited = new Set();
-  while (gridValue(mutatedGrid, curr[1][0], curr[1][1]) != null) {
-    if (visited.has(visitedStrFrom(curr))) {
+  while (gridValue(grid, curr[0], curr[1]) != null) {
+    const visitedStr = `${curr[0]},${curr[1]},${dirs[dir][0]},${dirs[dir][1]}}`;
+    if (visited.has(visitedStr)) {
       return true;
     }
-    visited.add(visitedStrFrom(curr));
-    curr = move(curr, mutatedGrid);
+    visited.add(visitedStr);
+    const [x, y] = mutCur(curr, dir);
+    if (gridValue(grid, x, y) == "#") {
+      dir++;
+      dir %= 4;
+    } else {
+      curr = [x, y];
+    }
   }
   return false;
 }
 
 function partTwo(grid) {
-  let startingPos = ["N", coordsOf("^", grid)];
-  const path = traverseFrom(startingPos, grid);
-  const uniqueNodes = [
-    ...new Set(path.map(([_, coords]) => `${coords[0]},${coords[1]}`)),
-  ].map((nodeStr) => nodeStr.split(",").map(Number));
-  return uniqueNodes
-    .splice(2, uniqueNodes.length)
-    .reduce((count, [x, y]) => {
-      if (grid[x][y] === ".") {
-        let n = 0;
-        grid[x][y] = "#";
-        if (producesLoop(startingPos, grid)) {
-          n = 1;
-        }
-        grid[x][y] = ".";
-        return count + n;
-      }
-      return count;
-    }, 0);
+  let start = coordsOf("^", grid);
+  const path = traverse(start, grid);
+
+  const uniqueNodeStrs = [...new Set(path.map(([x, y]) => `${x},${y}`))];
+  const uniqueNodes = uniqueNodeStrs
+    .map((nodeStr) => nodeStr.split(",").map(Number))
+    .splice(1, uniqueNodeStrs.length);
+
+  let count = 0;
+
+  for ([x, y] of uniqueNodes) {
+    const prev = grid[x][y];
+    grid[x][y] = "#";
+    if (producesLoop(start, grid)) {
+      count++;
+    }
+    grid[x][y] = prev;
+  }
+
+  return count;
 }
 
 function soln(rawInput) {
