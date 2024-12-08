@@ -48,7 +48,9 @@ const antiNodeLoc = (a, b) => [
 
 function allAntiNodes(a, b, h, w) {
   const result = new Set();
-  let [a_, b_] = antiNodeLocs(a, b); // first anti-nodes
+  let [a_, b_] = antiNodeLocs(a, b);
+  result.add(`${a[0]},${a[1]}`);
+  result.add(`${b[0]},${b[1]}`);
   let tmpA = [...a];
   let tmpB = [...b];
   let changed = true;
@@ -76,7 +78,7 @@ function partTwo(input) {
   const h = input.length;
   const w = input[0].length;
   const locMap = getLocationMap(input);
-  const uniqueNodes = Object.values(locMap).reduce((acc, coords) => {
+  return Object.values(locMap).reduce((acc, coords) => {
     for (let i = 0; i < coords.length; i++) {
       for (let j = 0; j < coords.length; j++) {
         if (j != i) {
@@ -86,20 +88,7 @@ function partTwo(input) {
       }
     }
     return acc;
-  }, new Set());
-
-  // what is problem 2 asking??
-
-  // const plusAntennas = [...uniqueNodes].reduce((acc, nodeStr) => {
-  //   const [x, y] = nodeStr.split(",").map(Number);
-  //   if (input[x][y] != ".") return acc + 1;
-  //   return acc;
-  // }, 0);
-  // const x = [...input];
-  // for (const n of [...uniqueNodes].map(it => it.split(",").map(Number))) {
-  //   x[n[0]] = x[n[0]].substring(0, n[1]) + "#" + x[n[0]].substring(n[1] + 1);
-  // }
-  // x.forEach(ln => console.log(ln))
+  }, new Set()).size;
 }
 
 function soln(rawInput) {
