@@ -36,16 +36,29 @@ function canMakeTotal(total, operands, opPerms) {
 }
 
 function partOne(input) {
+  const permMemo = new Map();
   return input.reduce((count, [total, operands]) => {
-    const opPerms = permutations(operands.length - 1, ["*", "+"]);
+    let opPerms;
+    if (permMemo.has(operands.length - 1)) {
+      opPerms = permMemo.get(operands.length - 1);
+    } else {
+      opPerms = permutations(operands.length - 1, ["*", "+"]);
+      permMemo.set(operands.length - 1, opPerms);
+    }
     if (canMakeTotal(total, operands, opPerms)) return count + total;
     return count;
   }, 0);
 }
 
 function partTwo(input) {
+  const permMemo = new Map();
   return input.reduce((count, [total, operands]) => {
-    const opPerms = permutations(operands.length - 1, ["*", "+", "|"]);
+    if (permMemo.has(operands.length - 1)) {
+      opPerms = permMemo.get(operands.length - 1);
+    } else {
+      opPerms = permutations(operands.length - 1, ["*", "+", "|"]);
+      permMemo.set(operands.length - 1, opPerms);
+    }
     if (canMakeTotal(total, operands, opPerms)) return count + total;
     return count;
   }, 0);
