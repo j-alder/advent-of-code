@@ -1,4 +1,4 @@
-const { fmtAnsWithRuntime } = require('../util.js');
+const { fmtAnsWithRuntime } = require("../util.js");
 
 function partOne(input) {
   let a = 0;
@@ -25,19 +25,60 @@ function partOne(input) {
     a++;
   }
   while (n > 0) {
-    console.log(a, b, n, j);
     total += i++ * (b / 2);
     n--;
   }
   return total;
 }
 
+class Node {
+  constructor(idx, value, emptyBlocksFollowing, prev) {
+    this.idx = idx;
+    this.value = value;
+    this.emptyBlocksFollowing = emptyBlocksFollowing;
+    this.next = null;
+    this.prev = prev;
+  }
+  assignBlocks(blocks) {
+    this.value += blocks;
+    this.emptyBlocksFollowing -= blocks.length;
+  }
+}
+
 function partTwo(input) {
+  const root = new Node("0".repeat(input[0]), input[1]);
+  let curr = root;
+  for (let i = 2; i < input.length; i += 2) {
+    curr.next = new Node(i, ((i / 2).toString()).repeat(input[i]), input[i+1] ?? 0, curr);
+    curr = curr.next;
+  }
+  while (curr != null) {
+    let currAsc = root;
+    // backtrack ll each node, 
+    // for each node, find space to fit
+    //  if found, add node value to found node and remove node
+    while (currAsc.idx < curr.idx) {
+      if (currAsc.emptyBlocksFollowing >= curr.value.length) {
+        currAsc.assignBlocks(curr.value);
+        if (curr.prev) curr.prev.next = curr.next;
+        if (curr.next) curr.next.prev = curr.prev;
+        curr = curr.prev;
+        currAsc = root;
+        continue;
+      } else {
+        currAsc = currAsc.next;
+      }
+    }
+    curr = curr.prev;
+  }
 }
 
 function soln(rawInput) {
   const input = rawInput.split("").map(Number);
-  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
+  fmtAnsWithRuntime(
+    () => partOne(input),
+    () => partTwo(input)
+  );
 }
 
 module.exports = { soln };
