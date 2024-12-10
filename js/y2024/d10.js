@@ -4,63 +4,33 @@ const {
   getNeighborsWithCoordinates,
 } = require("../util.js");
 
-function scoreTrailhead([x, y], grid) {
-  if (grid[x]?.[y] == null) return 0;
-
+function findUniquePositions([x, y], grid, uniquePositions) {
+  if (grid[x]?.[y] == null) return;
   const neighbors = getNeighborsWithCoordinates([x, y], grid, {
     n: [-1, 0],
     e: [0, -1],
     w: [0, 1],
     s: [1, 0],
   });
-
   const currElev = grid[x][y];
-
   if (currElev == 9) {
-    console.log("reached summit");
-    return 1;
+    if (!uniquePositions.has(`${[x,y]}`)) uniquePositions.add(`${[x,y]}`);
+    return;
   }
-
-  return Object.entries(neighbors)
-    .filter(([_, info]) => info != null && info.value - currElev == 1)
-    .reduce((acc, [_, info]) => {
-      // branch in all relevant directions
-      console.log(`${[x, y]} -> ${info.coords}`);
-      return acc + scoreTrailhead(info.coords, grid); // for each direction, score that path
-    }, 0);
-  // console.log(x, y);
-  // console.log(currElev);
-  // console.log(neighbors);
-  // if ((neighbors.n?.value ?? 0) - currElev == 1) {
-  //   if (neighbors.n.value == 9) return 1;
-  //   return scoreTrailhead(neighbors.n.coords, grid);
-  // }
-  // if ((neighbors.s?.value ?? 0) - currElev == 1) {
-  //   if (neighbors.s.value == 9) return 1;
-  //   return scoreTrailhead(neighbors.s.coords, grid);
-  // }
-  // if ((neighbors.e?.value ?? 0) - currElev == 1) {
-  //   if (neighbors.e.value == 9) return 1;
-  //   return scoreTrailhead(neighbors.e.coords, grid);
-  // }
-  // if ((neighbors.w?.value ?? 0) - currElev == 1) {
-  //   if (neighbors.w.value == 9) return 1;
-  //   return scoreTrailhead(neighbors.w.coords, grid);
-  // }
-  // return 0;
+  Object.entries(neighbors)
+    .filter(([_, info]) => info != null && info.value - currElev === 1)
+    .forEach(([_, info]) => findUniquePositions(info.coords, grid, uniquePositions));
 }
 
 function partOne(grid) {
   const trailheads = allCoordsOf(0, grid);
   let total = 0;
-  console.log(trailheads.length);
   for (th of trailheads) {
-    console.log(`trailhead staring at ${th}`);
-    const score = scoreTrailhead(th, grid);
-    console.log(score);
-    total += score;
+    const uniquePositions = new Set();
+    findUniquePositions(th, grid, uniquePositions);
+    total += uniquePositions.size;
   }
-  return total / 2;
+  return total;
 }
 
 function partTwo(input) {}
@@ -162,4 +132,67 @@ together, the sum of the scores of all trailheads is 36.
 
 The reindeer gleefully carries over a protractor and adds it to the pile. What 
 is the sum of the scores of all trailheads on your topographic map?
+
+--- Part Two ---
+The reindeer spends a few minutes reviewing your hiking trail map before 
+realizing something, disappearing for a few minutes, and finally returning with 
+yet another slightly-charred piece of paper.
+
+The paper describes a second way to measure a trailhead called its rating. A 
+trailhead's rating is the number of distinct hiking trails which begin at that 
+trailhead. For example:
+
+.....0.
+..4321.
+..5..2.
+..6543.
+..7..4.
+..8765.
+..9....
+The above map has a single trailhead; its rating is 3 because there are exactly 
+three distinct hiking trails which begin at that position:
+
+.....0.   .....0.   .....0.
+..4321.   .....1.   .....1.
+..5....   .....2.   .....2.
+..6....   ..6543.   .....3.
+..7....   ..7....   .....4.
+..8....   ..8....   ..8765.
+..9....   ..9....   ..9....
+Here is a map containing a single trailhead with rating 13:
+
+..90..9
+...1.98
+...2..7
+6543456
+765.987
+876....
+987....
+This map contains a single trailhead with rating 227 (because there are 121 
+distinct hiking trails that lead to the 9 on the right edge and 106 that lead to 
+the 9 on the bottom edge):
+
+012345
+123456
+234567
+345678
+4.6789
+56789.
+Here's the larger example from before:
+
+89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732
+Considering its trailheads in reading order, they have ratings of 20, 24, 10, 4, 
+1, 4, 5, 8, and 5. The sum of all trailhead ratings in this larger example 
+topographic map is 81.
+
+You're not sure how, but the reindeer seems to have crafted some tiny flags out 
+of toothpicks and bits of paper and is using them to mark trailheads on your 
+topographic map. What is the sum of the ratings of all trailheads?
 */
