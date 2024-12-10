@@ -66,8 +66,7 @@ function partTwo(input) {
       idx += drive[i];
     } else {
       for (const elem of drive[i]) {
-        total += idx * elem;
-        idx++;
+        total += idx++ * elem;
       }
     }
   }
