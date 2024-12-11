@@ -1,18 +1,16 @@
-const { fmtAnsWithRuntime } = require('../util.js');
+const { fmtAnsWithRuntime } = require("../util.js");
 
-/**
- * @param {string} stone 
- */
 function mutate(stone) {
   let result = [];
-  if (stone === "0")
-    result = ["1"];
+  if (stone === "0") result = ["1"];
   else if (stone.length % 2 === 0)
-    result = [stone.substring(0, stone.length / 2), stone.substring(stone.length / 2)];
-  else
-    result = [(Number(stone) * 2024).toString()];
+    result = [
+      stone.substring(0, stone.length / 2),
+      stone.substring(stone.length / 2),
+    ];
+  else result = [(Number(stone) * 2024).toString()];
 
-  return result.map(it => Number(it).toString());
+  return result.map((it) => Number(it).toString());
 }
 
 function partOne(stones) {
@@ -24,14 +22,16 @@ function partOne(stones) {
 }
 
 function partTwo(input) {
-  const stoneCounts = {};
-  input.forEach((stone) => stoneCounts[stone] = (stoneCounts[stone] ?? 0) + 1);
-  for (let i = 0; i < 6; i++) {
-    for (const stone of Object.keys(stoneCounts)) {
-      stoneCounts[stone]--;
-      if (stoneCounts[stone] == 0) delete stoneCounts[stone];
+  const stoneCounts = Object.fromEntries(input.map((stone) => [stone, 1]));
+  for (let i = 0; i < 75; i++) {
+    for (const [stone, count] of Object.entries(stoneCounts)) {
+      if (stoneCounts[stone] - count === 0) {
+        delete stoneCounts[stone];
+      } else {
+        stoneCounts[stone] -= count;
+      }
       const x = mutate(stone);
-      x.forEach(it => stoneCounts[it] = (stoneCounts[it] ?? 0) + 1);
+      x.forEach((it) => (stoneCounts[it] = (stoneCounts[it] ?? 0) + count));
     }
   }
   return Object.values(stoneCounts).reduce((acc, n) => acc + n, 0);
@@ -39,7 +39,10 @@ function partTwo(input) {
 
 function soln(rawInput) {
   const input = rawInput.split(" ");
-  fmtAnsWithRuntime(() => partOne(input), () => partTwo(input));
+  fmtAnsWithRuntime(
+    () => partOne(input),
+    () => partTwo(input)
+  );
 }
 
 module.exports = { soln };
@@ -112,6 +115,7 @@ After 5 blinks:
 
 After 6 blinks:
 2097446912 14168 4048 2 0 2 4 40 48 2024 40 48 80 96 2 8 6 7 6 0 3 2
+
 In this example, after blinking six times, you would have 22 stones. After 
 blinking 25 times, you would have 55312 stones!
 
