@@ -11,12 +11,14 @@ function findPlot([x, y], grid, plot, perimeter) {
   let matches = true;
   while (matches) {
     matches = false;
-    const edges = Object.values(getAllNeighborsWithCoordinates([x, y], grid, {
-      n: [-1, 0],
-      e: [0, -1],
-      w: [0, 1],
-      s: [1, 0],
-    }));
+    const edges = Object.values(
+      getAllNeighborsWithCoordinates([x, y], grid, {
+        n: [-1, 0],
+        e: [0, -1],
+        w: [0, 1],
+        s: [1, 0],
+      })
+    );
     const matchingEdges = edges.filter(
       (edge) => edge.value === crop && !plot.has(`${edge.coords}`)
     );
@@ -24,7 +26,7 @@ function findPlot([x, y], grid, plot, perimeter) {
       (edge) => edge.value == null || edge.value !== crop
     );
     for (const edge of nonMatchingEdges) {
-      perimeter.add(`${[x, y]}${edge.coords}`);
+      perimeter.add(`${[x, y]}|${edge.coords}`);
     }
     for (const edge of matchingEdges) {
       matches = true;
@@ -69,7 +71,64 @@ function partOne(grid) {
   }, 0);
 }
 
-function partTwo(input) {}
+function partTwo(grid) {
+  const uniqueLetters = findUniqueLetters(grid);
+  let letters;
+  let plots = [];
+  while ((letters = Object.keys(uniqueLetters)).length > 0) {
+    while (uniqueLetters[letters[0]].length > 0) {
+      const plot = new Set();
+      const perimeter = new Set();
+      plots.push([plot, perimeter]);
+      findPlot(uniqueLetters[letters[0]][0], grid, plot, perimeter);
+      uniqueLetters[letters[0]] = uniqueLetters[letters[0]].filter(
+        (letterCoord) => !plot.has(`${letterCoord}`)
+      );
+    }
+    delete uniqueLetters[letters[0]];
+  }
+
+  return plots.reduce((total, [plot, perimeter]) => {
+    const [uxe, uye] = [...plot].reduce(
+      (acc, plotCoords) => {
+        const [x, y] = plotCoords.split(",").map(Number);
+        acc[0].add(x);
+        acc[1].add(y);
+        return acc;
+      },
+      [new Set(), new Set()]
+    );
+
+    const insideCorners = Object.entries(
+      [...perimeter].reduce((acc, plotAdjCoords) => {
+        const coords = plotAdjCoords.split("|")[1];
+        acc[coords] = (acc[coords] ?? 0) + 1;
+        return acc;
+      }, {})
+    )
+      .filter(([_, v]) => v > 1)
+      .map(([k, _]) => k);
+
+    const [uxi, uyi] = insideCorners.reduce(
+      (acc, coords) => {
+        const [x, y] = coords.split(",").map(Number);
+        acc[0].add(x);
+        acc[1].add(y);
+        return acc;
+      },
+      [new Set(), new Set()]
+    );
+
+    console.log(uxe.size, uye.size, uxi.size, uyi.size);
+    console.log(uxe.size, uye.size, uxi.size, uyi.size);
+    console.log();
+
+    const sides = uxe.size * 2 + uye.size * 2 + (uxi.size * 2 + uyi.size * 2);
+    console.log(plot.size, sides);
+
+    return total + plot.size * sides;
+  }, 0);
+}
 
 function soln(rawInput) {
   const input = rawInput.split("\n").map((ln) => ln.split(""));
