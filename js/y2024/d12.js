@@ -1,37 +1,39 @@
 const {
   fmtAnsWithRuntime,
-  getNeighborsWithCoordinates,
+  getAllNeighborsWithCoordinates,
 } = require("../util.js");
 
-function findPlot([x, y], grid, plot) {
+function findPlot([x, y], grid, plot, perimeter) {
   const crop = grid[x][y];
+
   plot.add(`${x},${y}`);
+
   let matches = true;
   while (matches) {
     matches = false;
-    const matchingSurrounding = Object.values(
-      getNeighborsWithCoordinates([x, y], grid, {
-        n: [-1, 0],
-        e: [0, -1],
-        w: [0, 1],
-        s: [1, 0],
-      })
-    ).filter(
-      (it) => it != null && it.value === crop && !plot.has(`${it.coords}`)
+    const edges = Object.values(getAllNeighborsWithCoordinates([x, y], grid, {
+      n: [-1, 0],
+      e: [0, -1],
+      w: [0, 1],
+      s: [1, 0],
+    }));
+    const matchingEdges = edges.filter(
+      (edge) => edge.value === crop && !plot.has(`${edge.coords}`)
     );
-    if (matchingSurrounding.length > 0) {
-      matches = true;
+    const nonMatchingEdges = edges.filter(
+      (edge) => edge.value == null || edge.value !== crop
+    );
+    for (const edge of nonMatchingEdges) {
+      perimeter.add(`${[x, y]}${edge.coords}`);
     }
-    matchingSurrounding.forEach((it) => {
-      plot.add(`${it.coords}`);
-      findPlot(it.coords, grid, plot);
-    });
+    for (const edge of matchingEdges) {
+      matches = true;
+      plot.add(`${edge.coords}`);
+      findPlot(edge.coords, grid, plot, perimeter);
+    }
   }
 }
 
-/**
- * @param {string[][]} grid
- */
 function findUniqueLetters(grid) {
   const uniqueLetters = {};
   for (let x = 0; x < grid.length; x++) {
@@ -46,36 +48,6 @@ function findUniqueLetters(grid) {
   return uniqueLetters;
 }
 
-// number of unique coords = area of set
-// number of unique sides = perimeter of set = how to calc?
-
-/*
-perimeter of set size 1 = 4
-C
-CC
- C
-[1,1]       -- perim 3
-[2,1],[2,2] -- perim 4
-      [3,2] -- perim 3 = 10
-[1,1],[2,1],[2,2][3,2]
--- each unique x * 2 = 6
--- each unique y * 2 = 4
-10
-
-AAAA -- perim 10
-each unique x * 2 = 2
-each unique y * 2 = 4
-8
-
-AA
-AA -- perim 8
--- each unique x * 2 = 4
--- each unique y * 2 = 4
-8
-
-
-*/
-
 function partOne(grid) {
   const uniqueLetters = findUniqueLetters(grid);
   let letters;
@@ -83,26 +55,17 @@ function partOne(grid) {
   while ((letters = Object.keys(uniqueLetters)).length > 0) {
     while (uniqueLetters[letters[0]].length > 0) {
       const plot = new Set();
-      plots.push(plot);
-      findPlot(uniqueLetters[letters[0]][0], grid, plot);
+      const perimeter = new Set();
+      plots.push([plot, perimeter]);
+      findPlot(uniqueLetters[letters[0]][0], grid, plot, perimeter);
       uniqueLetters[letters[0]] = uniqueLetters[letters[0]].filter(
         (letterCoord) => !plot.has(`${letterCoord}`)
       );
     }
     delete uniqueLetters[letters[0]];
   }
-  return plots.reduce((total, plot) => {
-    const area = plot.size;
-    // how to find perimeter?
-    const uniqueX = new Set();
-    const uniqueY = new Set();
-    [...plot].forEach(cs => {
-      const [x, y] = cs.split(",").map(Number);
-      uniqueX.add(x);
-      uniqueY.add(y);
-    });
-    const perimeter = (uniqueX.size * 2) + (uniqueY.size * 2);
-    return total + area * perimeter;
+  return plots.reduce((total, [plot, perimeter]) => {
+    return total + plot.size * perimeter.size;
   }, 0);
 }
 
@@ -226,4 +189,73 @@ A region of S plants with price 3 * 8 = 24.
 So, it has a total price of 1930.
 
 What is the total price of fencing all regions on your map?
+
+--- Part Two ---
+Fortunately, the Elves are trying to order so much fence that they qualify for a 
+bulk discount!
+
+Under the bulk discount, instead of using the perimeter to calculate the price, 
+you need to use the number of sides each region has. Each straight section of 
+fence counts as a side, regardless of how long it is.
+
+Consider this example again:
+
+AAAA
+BBCD
+BBCC
+EEEC
+The region containing type A plants has 4 sides, as does each of the regions 
+containing plants of type B, D, and E. However, the more complex region 
+containing the plants of type C has 8 sides!
+
+Using the new method of calculating the per-region price by multiplying the 
+region's area by its number of sides, regions A through E have prices 16, 16, 32, 
+4, and 12, respectively, for a total price of 80.
+
+The second example above (full of type X and O plants) would have a total price 
+of 436.
+
+Here's a map that includes an E-shaped region full of type E plants:
+
+EEEEE
+EXXXX
+EEEEE
+EXXXX
+EEEEE
+The E-shaped region has an area of 17 and 12 sides for a price of 204. Including 
+the two regions full of type X plants, this map has a total price of 236.
+
+This map has a total price of 368:
+
+AAAAAA
+AAABBA
+AAABBA
+ABBAAA
+ABBAAA
+AAAAAA
+It includes two regions full of type B plants (each with 4 sides) and a single 
+region full of type A plants (with 4 sides on the outside and 8 more sides on 
+the inside, a total of 12 sides). Be especially careful when counting the fence 
+around regions like the one full of type A plants; in particular, each section of 
+fence has an in-side and an out-side, so the fence does not connect across the 
+middle of the region (where the two B regions touch diagonally). (The Elves 
+would have used the Möbius Fencing Company instead, but their contract terms 
+were too one-sided.)
+
+The larger example from before now has the following updated prices:
+
+A region of R plants with price 12 * 10 = 120.
+A region of I plants with price 4 * 4 = 16.
+A region of C plants with price 14 * 22 = 308.
+A region of F plants with price 10 * 12 = 120.
+A region of V plants with price 13 * 10 = 130.
+A region of J plants with price 11 * 12 = 132.
+A region of C plants with price 1 * 4 = 4.
+A region of E plants with price 13 * 8 = 104.
+A region of I plants with price 14 * 16 = 224.
+A region of M plants with price 5 * 6 = 30.
+A region of S plants with price 3 * 6 = 18.
+Adding these together produces its new total price of 1206.
+
+What is the new total price of fencing all regions on your map?
 */

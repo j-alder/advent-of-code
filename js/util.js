@@ -97,6 +97,24 @@ const getNeighborsWithCoordinates = (
     })
   );
 
+const getAllNeighborsWithCoordinates = (
+  [x, y],
+  matrix,
+  directions = defaultDirections
+) =>
+  Object.fromEntries(
+    Object.entries(directions).map(([k, dir]) => {
+      const value = matrix[x + dir[0]]?.[y + dir[1]];
+      return [
+        k,
+        { 
+          value,
+          coords: [x + dir[0], y + dir[1]]
+        }
+      ];
+    })
+  );
+
 /**
  * Get all neighbors of a specific element in a matrix at coordinates x and y.
  *
@@ -215,6 +233,7 @@ module.exports = {
   coordsOf,
   fmtAnsWithRuntime,
   gcd,
+  getAllNeighborsWithCoordinates,
   getNeighbors,
   getNeighborsWithCoordinates,
   isPalindrome,
