@@ -119,12 +119,7 @@ function partTwo(grid) {
       [new Set(), new Set()]
     );
 
-    console.log(uxe.size, uye.size, uxi.size, uyi.size);
-    console.log(uxe.size, uye.size, uxi.size, uyi.size);
-    console.log();
-
     const sides = uxe.size * 2 + uye.size * 2 + (uxi.size * 2 + uyi.size * 2);
-    console.log(plot.size, sides);
 
     return total + plot.size * sides;
   }, 0);
