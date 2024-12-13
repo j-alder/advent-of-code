@@ -3,27 +3,39 @@ const {
   getAllNeighborsWithCoordinates,
 } = require("../util.js");
 
-function findPlot([x, y], grid, plot, perimeter) {
+function findPlot([x, y], grid, plot, perimeter, corners) {
   const crop = grid[x][y];
 
   plot.add(`${[x, y]}`);
 
   const edges = Object.entries(getAllNeighborsWithCoordinates([x, y], grid));
-  const matchingEdges = edges.filter(
-    ([_, e]) => e.value === crop && !plot.has(`${e.coords}`)
-  );
+
+  const matchingEdges = edges.filter(([_, e]) => e.value === crop);
+
+  const { n, s, w, e, nw, sw, ne, se } = Object.fromEntries(matchingEdges);
 
   const nonMatchingEdges = edges.filter(
     ([_, e]) => e.value == null || e.value !== crop
   );
+
   for (const [d, e] of nonMatchingEdges) {
     if (["n", "s", "e", "w"].includes(d)) {
       perimeter.add(`${[x, y]}|${e.coords}`);
     }
   }
+
+  const md = new Set(matchingEdges.map((it) => it[0]));
+
   for (const [d, e] of matchingEdges) {
     if (["n", "s", "e", "w"].includes(d) && !plot.has(`${e.coords}`)) {
-      findPlot(e.coords, grid, plot, perimeter);
+      const f = [
+        (!(w || n) || (w && n && !nw)),
+        (!(w || s) || (w && s && !sw)),
+        (!(e || n) || (e && n && !ne)),
+        (!(e || s) || (e && s && !se)),
+      ].filter(Boolean).length;
+      corners.push(f);
+      findPlot(e.coords, grid, plot, perimeter, corners);
     }
   }
 }
@@ -51,7 +63,7 @@ function partOne(grid) {
       const plot = new Set();
       const perimeter = new Set();
       plots.push([plot, perimeter]);
-      findPlot(uniqueLetters[letters[0]][0], grid, plot, perimeter);
+      findPlot(uniqueLetters[letters[0]][0], grid, plot, perimeter, []);
       uniqueLetters[letters[0]] = uniqueLetters[letters[0]].filter(
         (letterCoord) => !plot.has(`${letterCoord}`)
       );
@@ -70,9 +82,9 @@ function partTwo(grid) {
   while ((letters = Object.keys(uniqueLetters)).length > 0) {
     while (uniqueLetters[letters[0]].length > 0) {
       const plot = new Set();
-      const perimeter = new Set();
-      plots.push([plot, perimeter]);
-      findPlot(uniqueLetters[letters[0]][0], grid, plot, perimeter);
+      const corners = [];
+      plots.push([plot, corners]);
+      findPlot(uniqueLetters[letters[0]][0], grid, plot, new Set(), corners);
       uniqueLetters[letters[0]] = uniqueLetters[letters[0]].filter(
         (letterCoord) => !plot.has(`${letterCoord}`)
       );
@@ -80,40 +92,9 @@ function partTwo(grid) {
     delete uniqueLetters[letters[0]];
   }
 
-  return plots.reduce((total, [plot, perimeter]) => {
-    const [uxe, uye] = [...plot].reduce(
-      (acc, plotCoords) => {
-        const [x, y] = plotCoords.split(",").map(Number);
-        acc[0].add(x);
-        acc[1].add(y);
-        return acc;
-      },
-      [new Set(), new Set()]
-    );
-
-    const insideCorners = Object.entries(
-      [...perimeter].reduce((acc, plotAdjCoords) => {
-        const coords = plotAdjCoords.split("|")[1];
-        acc[coords] = (acc[coords] ?? 0) + 1;
-        return acc;
-      }, {})
-    )
-      .filter(([_, v]) => v > 1)
-      .map(([k, _]) => k);
-
-    const [uxi, uyi] = insideCorners.reduce(
-      (acc, coords) => {
-        const [x, y] = coords.split(",").map(Number);
-        acc[0].add(x);
-        acc[1].add(y);
-        return acc;
-      },
-      [new Set(), new Set()]
-    );
-
-    const sides = uxe.size * 2 + uye.size * 2 + (uxi.size * 2 + uyi.size * 2);
-
-    return total + plot.size * sides;
+  return plots.reduce((total, [plot, corners]) => {
+    const c = corners.reduce((acc, c) => acc + c, 0);
+    return total + plot.size * c;
   }, 0);
 }
 
