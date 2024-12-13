@@ -7,15 +7,17 @@ function solve(machine, offset = 0) {
     (prizes[0] * machine.b[1] - prizes[1] * machine.b[0]) / determinant;
   const bPresses =
     (prizes[1] * machine.a[0] - prizes[0] * machine.a[1]) / determinant;
-  const cost = aPresses * 3 + bPresses;
-  return cost % 1 == 0 ? cost : 0;
+  if (aPresses % 1 != 0 || bPresses % 1 != 0) {
+    return 0
+  }
+  return aPresses * 3 + bPresses;
 }
 
 const partOne = (input) =>
   input.reduce((total, machine) => total + solve(machine), 0);
 
 const partTwo = (input) =>
-  input.reduce((total, machine) => total + solve(machine, 10000000000000), 0);
+  input.reduce((total, machine) => total + solve(machine, 10_000_000_000_000), 0);
 
 function soln(rawInput) {
   const input = rawInput
