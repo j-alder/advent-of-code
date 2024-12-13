@@ -6,32 +6,24 @@ const {
 function findPlot([x, y], grid, plot, perimeter) {
   const crop = grid[x][y];
 
-  plot.add(`${x},${y}`);
+  plot.add(`${[x, y]}`);
 
-  let matches = true;
-  while (matches) {
-    matches = false;
-    const edges = Object.values(
-      getAllNeighborsWithCoordinates([x, y], grid, {
-        n: [-1, 0],
-        e: [0, -1],
-        w: [0, 1],
-        s: [1, 0],
-      })
-    );
-    const matchingEdges = edges.filter(
-      (edge) => edge.value === crop && !plot.has(`${edge.coords}`)
-    );
-    const nonMatchingEdges = edges.filter(
-      (edge) => edge.value == null || edge.value !== crop
-    );
-    for (const edge of nonMatchingEdges) {
-      perimeter.add(`${[x, y]}|${edge.coords}`);
+  const edges = Object.entries(getAllNeighborsWithCoordinates([x, y], grid));
+  const matchingEdges = edges.filter(
+    ([_, e]) => e.value === crop && !plot.has(`${e.coords}`)
+  );
+
+  const nonMatchingEdges = edges.filter(
+    ([_, e]) => e.value == null || e.value !== crop
+  );
+  for (const [d, e] of nonMatchingEdges) {
+    if (["n", "s", "e", "w"].includes(d)) {
+      perimeter.add(`${[x, y]}|${e.coords}`);
     }
-    for (const edge of matchingEdges) {
-      matches = true;
-      plot.add(`${edge.coords}`);
-      findPlot(edge.coords, grid, plot, perimeter);
+  }
+  for (const [d, e] of matchingEdges) {
+    if (["n", "s", "e", "w"].includes(d) && !plot.has(`${e.coords}`)) {
+      findPlot(e.coords, grid, plot, perimeter);
     }
   }
 }
