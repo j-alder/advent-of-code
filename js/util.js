@@ -77,6 +77,17 @@ const defaultDirections = {
   se: [1, 1],
 };
 
+/**
+ * Get all neighbors of a specific coordinate in a matrix. Optionally
+ * pass in a directions object to limit how many and which neighbors
+ * are returned. A neighbor's value is undefined if it exists outside 
+ * of the matrix.
+ * 
+ * @param {[number, number]} param0 The coordinates to get neighbors for
+ * @param {*} matrix 
+ * @param {*} directions 
+ * @returns {{[key: string]: [any, number, number] | undefined}}
+ */
 const getNeighborsWithCoordinates = (
   [x, y],
   matrix,
@@ -97,6 +108,17 @@ const getNeighborsWithCoordinates = (
     })
   );
 
+/**
+ * Get all neighbors of a specific coordinate in a matrix. Optionally
+ * pass in a directions object to limit how many and which neighbors
+ * are returned. All neighbors will be returned, even if they are 
+ * outside of the matrix.
+ * 
+ * @param {[number, number]} param0 The coordinates to get neighbors for
+ * @param {*} matrix 
+ * @param {*} directions 
+ * @returns {{[key: string]: [any, number, number] | undefined}}
+ */
 const getAllNeighborsWithCoordinates = (
   [x, y],
   matrix,
@@ -202,7 +224,7 @@ function lcm(a, b) {
  *
  * @param {Array<number | string>} arr
  */
-function occurrances(arr) {
+function freq(arr) {
   return arr.reduce((acc, elem) => {
     if (acc[elem] != null) {
       acc[elem] = acc[elem] + 1;
@@ -238,7 +260,7 @@ module.exports = {
   getNeighborsWithCoordinates,
   isPalindrome,
   lcm,
-  occurrances,
+  freq,
   rotateMatrixAntiClockwise,
   rotateMatrixClockwise,
   sum,

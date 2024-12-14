@@ -1,4 +1,4 @@
-const { fmtAnsWithRuntime, occurrances } = require('../util.js');
+const { fmtAnsWithRuntime, freq } = require('../util.js');
 
 function partOne([list1, list2]) {
   const sortedList1 = list1.sort();
@@ -7,7 +7,7 @@ function partOne([list1, list2]) {
 }
 
 function partTwo([list1, list2]) {
-  const list2Occ = occurrances(list2);
+  const list2Occ = freq(list2);
   return list1.reduce((acc, elem) => acc + ((list2Occ[elem] ?? 0) * elem), 0);
 }
 
