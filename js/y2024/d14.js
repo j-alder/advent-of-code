@@ -1,4 +1,12 @@
-const { fmtAnsWithRuntime, betweenInc } = require("../util.js");
+const {
+  fmtAnsWithRuntime,
+  betweenInc,
+  getAllNeighborsWithCoordinates,
+  sum,
+  rotateMatrixClockwise,
+  rotateMatrixAntiClockwise,
+} = require("../util.js");
+const fs = require("node:fs");
 
 const xlen = 101;
 const ylen = 103;
@@ -16,6 +24,7 @@ function partOne(robots) {
       robot.pos = move(robot.pos, robot.vel);
     }
   }
+
   const [q1, q2, q3, q4] = Object.values(robots).reduce(
     (acc, { pos: [y, x], _ }) => {
       if (betweenInc(x, 0, Math.floor(xlen / 2) - 1)) {
@@ -41,7 +50,76 @@ function partOne(robots) {
   return q1 * q2 * q3 * q4;
 }
 
-function partTwo(input) {}
+/**
+ *
+ * @param {[number, number]} param0
+ * @param {number[][]} image
+ * @param {Set<string>} visited
+ * @param {Set<string>} uniquePositions
+ */
+function fill([y, x], image, uniquePositions) {
+  uniquePositions.delete(`${[y, x]}`);
+
+  const edges = Object.values(getAllNeighborsWithCoordinates([y, x], image));
+
+  const matchingEdges = edges.filter((edge) => (edge.value ?? 0) > 0);
+
+  for (const edge of matchingEdges) {
+    if (uniquePositions.has(`${[y, x]}`)) {
+      fill(edge.coords, image, uniquePositions);
+    }
+  }
+}
+
+function variance(nums) {
+  const mean = sum(nums) / nums.length;
+  return nums.reduce((acc, n) => acc + Math.pow(n - mean, 2), 0) / nums.length;
+}
+
+function avgVariance(robots) {
+  const allX = robots.map(({ pos }) => pos[1]);
+  const varX = variance(allX);
+  const allY = robots.map(({ pos }) => pos[0]);
+  const varY = variance(allY);
+  return (varX + varY) / 2;
+}
+
+function partTwo(robots) {
+  const image = Array.from({ length: xlen }, () =>
+    Array.from({ length: ylen }, () => 0)
+  );
+  robots.forEach(({ pos, _ }) => {
+    image[pos[1]][pos[0]] = (image[pos[1]][pos[0]] ?? 0) + 1;
+  });
+
+  let lowestAvgVar = [Number.MAX_SAFE_INTEGER, -1];
+
+  for (let sec = 1; sec < 20_000; sec++) {
+    for (const robot of robots) {
+      image[robot.pos[1]][robot.pos[0]]--;
+      robot.pos = move(robot.pos, robot.vel);
+      image[robot.pos[1]][robot.pos[0]]++;
+    }
+
+    const avgVar = avgVariance(robots);
+    if (avgVar < lowestAvgVar[0]) {
+      lowestAvgVar = [avgVar, sec];
+    }
+
+    if (avgVariance(robots) < 500) {
+      fs.writeFile(
+        `/Users/jonathon/Code/advent-of-code/js/y2024/d14out/d14-${sec}.txt`,
+        rotateMatrixClockwise(image)
+          .map((row) => row.map((it) => (it > 0 ? "#" : " ")).join(""))
+          .join("\n"),
+        (err) => {
+          if (err) console.log(err, sec);
+        }
+      );
+    }
+  }
+  return lowestAvgVar[1];
+}
 
 function soln(rawInput) {
   const input = rawInput.split("\n").map((ln) => {
@@ -205,4 +283,13 @@ together gives a total safety factor of 12.
 Predict the motion of the robots in your list within a space which is 101 tiles 
 wide and 103 tiles tall. What will the safety factor be after exactly 100 seconds 
 have elapsed?
+
+--- Part Two ---
+During the bathroom break, someone notices that these robots seem awfully similar 
+to ones built and used at the North Pole. If they're the same type of robots, they
+should have a hard-coded Easter egg: very rarely, most of the robots should arrange
+themselves into a picture of a Christmas tree.
+
+What is the fewest number of seconds that must elapse for the robots to display the
+Easter egg?
 */

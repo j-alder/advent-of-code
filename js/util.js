@@ -37,6 +37,26 @@ function allCoordsOf(val, matrix) {
 }
 
 /**
+ * Find the coordinates of all values that are true for f in a 2d array. Returns
+ * empty array if not found.
+ *
+ * @param {() => boolean} f 
+ * @param {any[][]} matrix 
+ */
+function allCoordsWith(f, matrix) {
+  let x = 0;
+  const result = [];
+  for (let x = 0; x < matrix.length; x++) {
+    for (let y = 0; y < matrix[x].length; y++) {
+      if (f(matrix[x][y])) {
+        result.push([x, y]);
+      }
+    }
+  }
+  return result;
+}
+
+/**
  * Execute a function and record its runtime.
  *
  * @param {() => number} f The function to execute
@@ -250,6 +270,7 @@ const betweenInc = (n, a, b) => n >=a && n <= b;
 
 module.exports = {
   allCoordsOf,
+  allCoordsWith,
   between,
   betweenInc,
   coordsOf,
