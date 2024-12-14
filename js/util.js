@@ -39,8 +39,8 @@ function allCoordsOf(val, matrix) {
 /**
  * Execute a function and record its runtime.
  *
- * @param {*} f The function to execute
- * @returns {Array<string, number>} A tuple with the function result and the runtime
+ * @param {() => number} f The function to execute
+ * @returns {[string, number]} A tuple with the function result and the runtime
  */
 function withRuntime(f) {
   const start = performance.now();
@@ -50,8 +50,8 @@ function withRuntime(f) {
 /**
  * Format the output of two callbacks with their runtimes
  *
- * @param {function()} partOne
- * @param {function()} partTwo
+ * @param {() => number} partOne
+ * @param {() => number} partTwo
  */
 function fmtAnsWithRuntime(partOne, partTwo) {
   const [ansOne, rtOne] = withRuntime(partOne);
@@ -80,12 +80,12 @@ const defaultDirections = {
 /**
  * Get all neighbors of a specific coordinate in a matrix. Optionally
  * pass in a directions object to limit how many and which neighbors
- * are returned. A neighbor's value is undefined if it exists outside 
+ * are returned. A neighbor's value is undefined if it exists outside
  * of the matrix.
- * 
+ *
  * @param {[number, number]} param0 The coordinates to get neighbors for
- * @param {*} matrix 
- * @param {*} directions 
+ * @param {*} matrix
+ * @param {*} directions
  * @returns {{[key: string]: [any, number, number] | undefined}}
  */
 const getNeighborsWithCoordinates = (
@@ -111,12 +111,12 @@ const getNeighborsWithCoordinates = (
 /**
  * Get all neighbors of a specific coordinate in a matrix. Optionally
  * pass in a directions object to limit how many and which neighbors
- * are returned. All neighbors will be returned, even if they are 
+ * are returned. All neighbors will be returned, even if they are
  * outside of the matrix.
- * 
+ *
  * @param {[number, number]} param0 The coordinates to get neighbors for
- * @param {*} matrix 
- * @param {*} directions 
+ * @param {*} matrix
+ * @param {*} directions
  * @returns {{[key: string]: [any, number, number] | undefined}}
  */
 const getAllNeighborsWithCoordinates = (
@@ -129,10 +129,10 @@ const getAllNeighborsWithCoordinates = (
       const value = matrix[x + dir[0]]?.[y + dir[1]];
       return [
         k,
-        { 
+        {
           value,
-          coords: [x + dir[0], y + dir[1]]
-        }
+          coords: [x + dir[0], y + dir[1]],
+        },
       ];
     })
   );
@@ -214,9 +214,7 @@ function gcd(a, b) {
  * @param {number} a
  * @param {number} b
  */
-function lcm(a, b) {
-  return (a * b) / gcd(a, b);
-}
+const lcm = (a, b) => (a * b) / gcd(a, b);
 
 /**
  * A map of elements in an array to the number of times they
@@ -224,8 +222,8 @@ function lcm(a, b) {
  *
  * @param {Array<number | string>} arr
  */
-function freq(arr) {
-  return arr.reduce((acc, elem) => {
+const freq = (arr) =>
+  arr.reduce((acc, elem) => {
     if (acc[elem] != null) {
       acc[elem] = acc[elem] + 1;
     } else {
@@ -233,7 +231,6 @@ function freq(arr) {
     }
     return acc;
   }, {});
-}
 
 /**
  * Determine whether a number is between two other numbers,
@@ -249,18 +246,21 @@ function freq(arr) {
  */
 const between = (n, a, b) => n > a && n < b;
 
+const betweenInc = (n, a, b) => n >=a && n <= b;
+
 module.exports = {
   allCoordsOf,
   between,
+  betweenInc,
   coordsOf,
   fmtAnsWithRuntime,
+  freq,
   gcd,
   getAllNeighborsWithCoordinates,
   getNeighbors,
   getNeighborsWithCoordinates,
   isPalindrome,
   lcm,
-  freq,
   rotateMatrixAntiClockwise,
   rotateMatrixClockwise,
   sum,
