@@ -1,20 +1,72 @@
-const { fmtAnsWithRuntime, allCoordsOf, coordsOf } = require('../util.js');
+const {
+  fmtAnsWithRuntime,
+  coordsOf,
+  getNeighborsWithCoordinates,
+  allCoordsOf,
+  getAllNeighborsWithCoordinates,
+} = require("../util.js");
 
-function partOne(input) {
-  const allNodes = allCoordsOf(".", input);
-  const startNode = coordsOf("S", input);
-  const endNode = coordsOf("E", input);
+const dirs = [
+  [0, 1], // e
+  [1, 0], // s
+  [0, -1], // w
+  [-1, 0] // n
+]
 
+const fmtKey = ([x, y], dir) => `${x},${y},${dir}`;
+
+function getLowestScore(matrix, [sx, sy], [ex, ey]) {
+  let score = 0;
+
+  const queue = [[sx, sy, 2, 0]]; // queue of unvisited nodes
+  const visited = new Set();
+
+  while (queue.length) {
+    queue.sort((a, b) => a[3] - b[3]); // sort by closest (smallest score)
+
+    const [x, y, dir, score] = queue.shift(); // get the closest node
+    const key = fmtKey([x, y], dir); // unique identifier with node and direction
+
+    if (x === ex && y === ey) return score; // if the node is the end node, return the score -- exits early!
+    if (visited.has(key)) continue; // if already visited, skip
+
+    visited.add(key); // set visited
+
+    const [fx, fy] = [x + dirs[dir][0], y + dirs[dir][1]]; // forward direction
+    const left = (dir + 3) % 4;
+    const right = (dir + 1) % 4;
+
+    if (matrix[fx]?.[fy] !== "#") {
+      queue.push([nx, ny, dir, score + 1]); // push forward direction into queue
+    }
+
+    // push all left/right dirs 
+    if (matrix[x + dirs[right][0]][y + dirs[right]] !== "#") {
+      queue.push([x, y, right, score + 1000]);
+    }
+    if (matrix[x + dirs[left][0]][y + dirs[left]] !== "#") {
+      queue.push([x, y, left, score + 1000]);
+    }
+  }
+
+  return score;
+};
+
+function partOne(matrix) {
+  // 104504 too high
+  // 103504 too high
+  const start = coordsOf("S", matrix);
+  const end = coordsOf("E", matrix);
+  return getScore(matrix, start, end);
 }
 
-function partTwo(input) {
-}
+function partTwo(matrix) {}
 
 function soln(rawInput) {
-  const input = rawInput.split("\n").map(ln => ln.split(""));
+  const matrix = rawInput.split("\n").map((ln) => ln.split(""));
   fmtAnsWithRuntime(
-    () => partOne(input),
-    () => partTwo(input)
+    () => partOne(matrix),
+    () => partTwo(matrix)
   );
 }
 
