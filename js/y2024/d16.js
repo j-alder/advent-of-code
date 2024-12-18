@@ -7,13 +7,6 @@ const dirs = [
   [-1, 0], // n
 ];
 
-const arrow = {
-  0: ">",
-  1: "v",
-  2: "<",
-  3: "^",
-};
-
 function getLowestScore(matrix, [sx, sy], [ex, ey]) {
   const queue = [[sx, sy, 0, 0]];
   const visited = new Set();
@@ -21,8 +14,8 @@ function getLowestScore(matrix, [sx, sy], [ex, ey]) {
   while (queue.length) {
     queue.sort((a, b) => a[3] - b[3]);
 
-    const [x, y, dir, score] = queue.shift();
-    const key = `${x},${y},${dir}`;
+    const [x, y, d, score] = queue.shift();
+    const key = `${x},${y},${d}`;
 
     if (x === ex && y === ey) {
       return score;
@@ -34,14 +27,14 @@ function getLowestScore(matrix, [sx, sy], [ex, ey]) {
 
     visited.add(key);
 
-    const [fx, fy] = [x + dirs[dir][0], y + dirs[dir][1]]; // forward direction
+    const [fx, fy] = [x + dirs[d][0], y + dirs[d][1]];
 
     if (matrix[fx]?.[fy] !== "#") {
-      queue.push([fx, fy, dir, score + 1]); // push forward direction into queue
+      queue.push([fx, fy, d, score + 1]);
     }
 
-    queue.push([x, y, (dir + 1) % 4, score + 1000]);
-    queue.push([x, y, (dir + 3) % 4, score + 1000]);
+    queue.push([x, y, (d + 1) % 4, score + 1000]);
+    queue.push([x, y, (d + 3) % 4, score + 1000]);
   }
   return -1;
 }
@@ -52,44 +45,50 @@ function partOne(matrix) {
   return getLowestScore(matrix, start, end);
 }
 
-function getAllPathsWithScore(matrix, [sx, sy], [ex, ey], lowestScore) {
-  const queue = [[sx, sy, 0, 0]];
-  const visited = new Set();
+function getAllPathsWithScore(matrix, [sx, sy], [ex, ey], targetScore) {
+  const queue = [[sx, sy, 0, 0, [[sx, sy]]]];
+  const visited = {};
+  const paths = [];
 
   while (queue.length) {
-    queue.sort((a, b) => a[3] - b[3]);
+    const [x, y, d, score, path] = queue.shift();
+    const key = `${x},${y},${d}`;
 
-    const [x, y, dir, score] = queue.shift();
-    const key = `${x},${y},${dir}`;
-
-    if (x === ex && y === ey) {
-      return score;
-    }
-
-    if (visited.has(key) || score > lowestScore) {
+    if (score > targetScore || (visited[key] != null && visited[key] < score)) {
       continue;
     }
 
-    visited.add(key);
+    visited[key] = score;
 
-    const [fx, fy] = [x + dirs[dir][0], y + dirs[dir][1]]; // forward direction
-
-    if (matrix[fx]?.[fy] !== "#") {
-      queue.push([fx, fy, dir, score + 1]); // push forward direction into queue
+    if (x === ex && y === ey && score === targetScore) {
+      paths.push(path);
+      continue;
     }
 
-    queue.push([x, y, (dir + 1) % 4, score + 1000]);
-    queue.push([x, y, (dir + 3) % 4, score + 1000]);
-  }
-  return -1;
+    const [fx, fy] = [x + dirs[d][0], y + dirs[d][1]];
 
+    if (matrix[fx]?.[fy] !== "#") {
+      queue.push([fx, fy, d, score + 1, [...path, [fx, fy]]]);
+    }
+
+    queue.push([x, y, (d + 1) % 4, score + 1000, [...path]]);
+    queue.push([x, y, (d + 3) % 4, score + 1000, [...path]]);
+  }
+
+  return paths;
 }
 
 function partTwo(matrix) {
   const start = coordsOf("S", matrix);
   const end = coordsOf("E", matrix);
   const lowestScore = getLowestScore(matrix, start, end);
-
+  return getAllPathsWithScore(matrix, start, end, lowestScore).reduce(
+    (uniqueSteps, path) => {
+      path.forEach((step) => uniqueSteps.add(`${step}`));
+      return uniqueSteps;
+    },
+    new Set()
+  ).size;
 }
 
 function soln(rawInput) {
