@@ -40,8 +40,8 @@ function allCoordsOf(val, matrix) {
  * Find the coordinates of all values that are true for f in a 2d array. Returns
  * empty array if not found.
  *
- * @param {() => boolean} f 
- * @param {any[][]} matrix 
+ * @param {() => boolean} f
+ * @param {any[][]} matrix
  */
 function allCoordsWith(f, matrix) {
   let x = 0;
@@ -266,7 +266,10 @@ const freq = (arr) =>
  */
 const between = (n, a, b) => n > a && n < b;
 
-const betweenInc = (n, a, b) => n >=a && n <= b;
+const betweenInc = (n, a, b) => n >= a && n <= b;
+
+const print2dArray = (array) =>
+  console.log(array.map((row) => row.join("")).join("\n"));
 
 module.exports = {
   allCoordsOf,
@@ -282,6 +285,7 @@ module.exports = {
   getNeighborsWithCoordinates,
   isPalindrome,
   lcm,
+  print2dArray,
   rotateMatrixAntiClockwise,
   rotateMatrixClockwise,
   sum,
