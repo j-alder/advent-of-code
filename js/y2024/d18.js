@@ -1,4 +1,4 @@
-const { fmtAnsWithRuntime, betweenInc } = require("../util.js");
+const { fmtAnsWithRuntime, print2dArray, betweenInc } = require("../util.js");
 
 const dirs = [
   [0, 1, 0], // e
@@ -10,6 +10,7 @@ const dirs = [
 function getShortestDistance(matrix, [sx, sy], [ex, ey]) {
   const queue = [[sx, sy, 0, 0]];
   const visited = new Set();
+  let iter = 0;
 
   while (queue.length) {
     queue.sort((a, b) => a[3] - b[3]);
@@ -38,6 +39,7 @@ function getShortestDistance(matrix, [sx, sy], [ex, ey]) {
           queue.push([x + nx, y + ny, dir, score + 1]);
         }
       });
+      iter++;
   }
   return -1;
 }
@@ -53,7 +55,7 @@ function dropBytes(numBytes, gridSize, bytes) {
 }
 
 function partOne(bytes) {
-  const grid = dropBytes(2935, 71, bytes);
+  const grid = dropBytes(1024, 71, bytes);
   return getShortestDistance(grid, [0, 0], [70, 70]);
 }
 
