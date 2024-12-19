@@ -1,4 +1,4 @@
-const { fmtAnsWithRuntime, print2dArray, betweenInc } = require("../util.js");
+const { fmtAnsWithRuntime, betweenInc } = require("../util.js");
 
 const dirs = [
   [0, 1, 0], // e
