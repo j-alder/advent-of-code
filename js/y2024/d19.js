@@ -28,34 +28,37 @@ function partOne(patterns, designs, maxPatternLength) {
   return possible;
 }
 
-/**
- * 
- * @param {string} design 
- * @param {Set<string>} patterns 
- * @param {number} maxPatternLength 
- * @param {Map<string, Array<string>>} memory 
- * @returns string[][]
- */
-function possibleCombinations(design, patterns, maxPatternLength) {
+function findAllCombinations(design, patterns, maxPatternLength, memory = new Map()) {
   if (design.length == 0) {
-    return [];
+    return 1;
   }
+  if (memory.has(design)) {
+    return memory.get(design);
+  }
+
+  let count = 0;
   for (let i = 0; i <= Math.min(design.length, maxPatternLength); i++) {
-    if (patterns.has(design.substring(0, i))) {
-      const x = [design.substring(0, i), ...possibleCombinations(design.substring(i), patterns, maxPatternLength)]
-    } else {
-      return [];
+    const ss = design.substring(0, i);
+    if (patterns.has(ss)) {
+      count += findAllCombinations(
+        design.substring(i),
+        patterns,
+        maxPatternLength,
+        memory
+      );
     }
   }
-  return [];
+
+  memory.set(design, count);
+  return count;
 }
 
 function partTwo(patterns, designs, maxPatternLength) {
-  let possible = 0;
+  let total = 0;
   for (const design of designs) {
-    possibleCombinations(design, patterns, maxPatternLength);
+    total += findAllCombinations(design, patterns, maxPatternLength);
   }
-  return possible;
+  return total;
 }
 
 function soln(rawInput) {
