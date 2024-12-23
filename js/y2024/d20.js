@@ -61,6 +61,20 @@ function partOne(matrix, distancesFromEnd) {
 }
 
 function partTwo(matrix) {
+  let sum = 0;
+  for (const [coords, distance] of distancesFromEnd) {
+    const [x, y] = coords.split(",").map(Number);
+    for (const d of clipDirs) {
+      const clips = d.map(([dx, dy]) => ([matrix[x + dx]?.[y + dy], x + dx, y + dy]));
+      if (clips[0][0] == "#" && (clips[1][0] == "." || clips[1][0] == "E")) {
+        const clipDist = distancesFromEnd.get(`${[clips[1][1],clips[1][2]]}`);
+        if (clipDist != null && distance - clipDist - 2 >= 100) {
+          sum++;
+        }
+      }
+    }
+  }
+  return sum;
 }
 
 function soln(rawInput) {
