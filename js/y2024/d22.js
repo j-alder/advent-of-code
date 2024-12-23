@@ -26,8 +26,8 @@ function partOne(secretNumbers) {
 
 const onesDigit = (secret) => {
   const str = secret.toString();
-  return Number(str.charAt(str.length-1));
-}
+  return Number(str.charAt(str.length - 1));
+};
 
 function shift(lastFive, ones) {
   if (lastFive.length > 4) {
@@ -38,8 +38,8 @@ function shift(lastFive, ones) {
 
 function diffs(lastFive) {
   const result = [];
-  for (let i = 0; i < lastFive.length-1; i++) {
-    result.push(lastFive[i+1] - lastFive[i]);
+  for (let i = 0; i < lastFive.length - 1; i++) {
+    result.push(lastFive[i + 1] - lastFive[i]);
   }
   return result;
 }
@@ -58,10 +58,9 @@ function partTwo(secretNumbers) {
         const seq = diffs(lastFive).join(",");
         if (x[seq] == null) {
           x[seq] = {
-            [initial]: ones
+            [initial]: ones,
           };
-        }
-        else if (x[seq]?.[initial] == null) {
+        } else if (x[seq]?.[initial] == null) {
           x[seq][initial] = ones;
         }
       }
