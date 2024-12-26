@@ -4,7 +4,6 @@ const {
   getAllNeighborsWithCoordinates,
   sum,
   rotateMatrixClockwise,
-  rotateMatrixAntiClockwise,
 } = require("../util.js");
 const fs = require("node:fs");
 
