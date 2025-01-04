@@ -8,34 +8,48 @@ const dirs = [
 ];
 
 /**
+ * @param {number[]} currLoc
+ * @param {number} dir
+ */
+function changeLoc(currLoc, dir) {
+  currLoc[0] += dirs[dir][0];
+  currLoc[1] += dirs[dir][1];
+}
+
+/**
+ * @param {number[]} currLoc 
+ * @param {string} dir 
+ * @param {Set<string>} houses
+ */
+function deliverPresent(currLoc, dir, houses) {
+  switch (dir) {
+    case "v":
+      changeLoc(currLoc, 0);
+      houses.add(currLoc.join(","));
+      break;
+    case "<":
+      changeLoc(currLoc, 1);
+      houses.add(currLoc.join(","));
+      break;
+    case "^":
+      changeLoc(currLoc, 2);
+      houses.add(currLoc.join(","));
+      break;
+    case ">":
+      changeLoc(currLoc, 3);
+      houses.add(currLoc.join(","));
+      break;
+  }
+}
+
+/**
  * @param {string} rawInput
  */
 function partOne(input) {
   const houses = new Set(["0,0"]);
   const currLoc = [0, 0];
   for (let a = 0; a < input.length; a++) {
-    switch (input[a]) {
-      case "v":
-        currLoc[0] += dirs[0][0];
-        currLoc[1] += dirs[0][1];
-        houses.add(currLoc.join(","));
-        break;
-      case "<":
-        currLoc[0] += dirs[1][0];
-        currLoc[1] += dirs[1][1];
-        houses.add(currLoc.join(","));
-        break;
-      case "^":
-        currLoc[0] += dirs[2][0];
-        currLoc[1] += dirs[2][1];
-        houses.add(currLoc.join(","));
-        break;
-      case ">":
-        currLoc[0] += dirs[3][0];
-        currLoc[1] += dirs[3][1];
-        houses.add(currLoc.join(","));
-        break;
-    }
+    deliverPresent(currLoc, input[a], houses);
   }
   return houses.size;
 }
@@ -49,28 +63,7 @@ function partTwo(input) {
   const roboSanta = [0, 0];
   for (let a = 0; a < input.length; a++) {
     const currLoc = a % 2 == 0 ? santa : roboSanta;
-    switch (input[a]) {
-      case "v":
-        currLoc[0] += dirs[0][0];
-        currLoc[1] += dirs[0][1];
-        houses.add(currLoc.join(","));
-        break;
-      case "<":
-        currLoc[0] += dirs[1][0];
-        currLoc[1] += dirs[1][1];
-        houses.add(currLoc.join(","));
-        break;
-      case "^":
-        currLoc[0] += dirs[2][0];
-        currLoc[1] += dirs[2][1];
-        houses.add(currLoc.join(","));
-        break;
-      case ">":
-        currLoc[0] += dirs[3][0];
-        currLoc[1] += dirs[3][1];
-        houses.add(currLoc.join(","));
-        break;
-    }
+    deliverPresent(currLoc, input[a], houses);
   }
   return houses.size;
 }
