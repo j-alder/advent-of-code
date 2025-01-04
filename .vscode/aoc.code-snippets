@@ -16,31 +16,42 @@
 	// 	"description": "Log output to console"
 	// }
 	"JavaScript boilerplate": {
-		"scope": "javascript,typescript",
+		"scope": "javascript",
 		"prefix": "jsbp",
 		"description": "single day solution setup",
 		"body": [
 			"const { fmtAnsWithRuntime } = require('../util.js');",
 			"",
-			"function partOne(input) {",
+			"/**",
+			" * @param {string} rawInput",
+			" */",
+			"function parseInput(rawInput) {",
+			"  $0",
 			"}",
 			"",
-			"function partTwo(input) {",
+			"/**",
+			" * @param {string} rawInput",
+			" */",
+			"function partOne(rawInput) {",
+			"  const input = parseInput(rawInput);",
+			"}",
+			"",
+			"/**",
+			" * @param {string} rawInput",
+			" */",
+			"function partTwo(rawInput) {",
+			"  const input = parseInput(rawInput);",
 			"}",
 			"",
 			"function soln(rawInput) {",
-			"  const input = rawInput.split(\"\\n\");",
 			"  fmtAnsWithRuntime("
-            "    () => partOne(input),", 
-            "    () => partTwo(input)",
+            "    () => partOne(rawInput),", 
+            "    () => partTwo(rawInput)",
             "  );"
 			"}",
 			"",
 			"module.exports = { soln };",
-			"",
-			"/*",
-			"$0",
-			"*/"
+			""
 		],
 	},
 	"Rust boilerplate": {
