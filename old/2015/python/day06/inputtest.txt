@@ -1,2 +1,0 @@
-turn on 5,5 through 10,10
-turn off 7,6 through 8,10
