@@ -1,3 +1,6 @@
+// This algorithm was copied directly from blueimp/JavaScript-MD5:
+// https://github.com/blueimp/JavaScript-MD5?tab=readme-ov-file
+
 /**
  * Add integers, wrapping at 2^32.
  * This uses 16-bit operations internally to work around bugs in interpreters.
