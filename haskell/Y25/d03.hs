@@ -1,32 +1,39 @@
 module Y25.D03 where
 
-import Data.List (sort)
-import Data.Char (ord)
 
+maxJoltage :: [Char] -> (Maybe Char, Maybe Char) -> Int
+maxJoltage [] (Just t, Just o) = read [t, o]
+maxJoltage (x : xs) (Nothing, Nothing) = maxJoltage xs (Just x, Nothing)
+maxJoltage (x : xs) (Just t, Nothing) = maxJoltage xs (Just t, Just x)
+maxJoltage (x : xs) (Just t, Just o) 
+  | x > t && not (null xs) = maxJoltage xs (Just x, Nothing)
+  | x > o = maxJoltage xs (Just t, Just x)
+  | otherwise = maxJoltage xs (Just t, Just o)
 
-jolts :: Char -> (Maybe Char, Maybe Char) -> (Maybe Char, Maybe Char)
-jolts c (Nothing, Nothing) = (Nothing, Just c)
-jolts c (Nothing, Just m) = (Just c, Just m)
-jolts c (Just n, Just m) 
-  | c > n = (Just c, if n > m then Just n else Just m)
-  | otherwise = (Just n, Just m)
+joltageT :: [Char] -> (Maybe Char, Maybe Char)
+joltageT = foldr (\c to -> 
+  case to of
+    (Nothing, Nothing) -> (Nothing, Just c)
+    (Nothing, Just o) -> (Just o, Just c)
+    (Just t, Just o) ->
+      let
+        t' = max c t
+        o' = if t' == c then max o t else max o c
+      in (Just t', Just o')
+  ) (Nothing, Nothing)
 
-maxJolts :: [Char] -> Int
-maxJolts = toInt . foldr jolts (Nothing, Nothing)
-  where 
-    toInt (Nothing, Nothing) = 0
-    toInt (Nothing, Just m) = read [m]
-    toInt (Just n, Just m) = read [n, m]
+joltage :: [Char] -> Int
+joltage = 
+  let j = joltageT
+  in read [fst j, snd j]
 
--- solution using right-associated fold, not quite correct yet
-soln1 :: [String] -> [Int] -> Int
-soln1 [] acc = sum acc
-soln1 (x : xs) acc = soln1 xs $ maxJolts x : acc
+soln1 :: [String] -> Int
+soln1 = foldl (\t b -> t + maxJoltage b (Nothing, Nothing)) 0
 
 main :: IO ()
 main = do
-  input <- readFile "../../../input/y2025/d03.txt"
+  input <- readFile "../../input/y2025/d03.txt"
   let lns = lines input
-      s1 = soln1 lns []
+      s1 = soln1 lns
   print s1
-    
+
