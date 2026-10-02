@@ -1,0 +1,16 @@
+cabal-version:      3.14
+name:               aoc-haskell
+version:            0.1.0.0
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall
+
+executable aoc-haskell
+    import:           warnings
+    main-is:          Main.hs
+    -- other-modules:
+    -- other-extensions:
+    build-depends:    base ^>=4.20.2.0
+    hs-source-dirs:   src
+    default-language: Haskell2010
